@@ -96,12 +96,38 @@ defmodule Cohere.Map.Renderer do
   defp contexts(%Map{groups: []}), do: nil
 
   defp contexts(map) do
+    {infra, groups} = Enum.split_with(map.groups, &(&1.kind == :infra))
+
     """
     ## Contexts
 
-    #{Enum.map_join(map.groups, "\n", &group_entry/1)}
+    #{Enum.map_join(groups, "\n", &group_entry/1)}
+    """ <> infra_entry(infra)
+  end
+
+  defp infra_entry([]), do: ""
+
+  defp infra_entry(infra) do
+    lines =
+      infra
+      |> Enum.flat_map(fn group -> group.others ++ group.schemas ++ group.workers end)
+      |> Enum.sort()
+      |> Enum.map(fn module ->
+        "- #{inspect(module)} (#{module |> Cohere.Derive.Modules.classify() |> infra_label()})"
+      end)
+
+    """
+    ### Infrastructure
+
+    #{Enum.join(lines, "\n")}
     """
   end
+
+  defp infra_label(:application), do: "OTP application"
+  defp infra_label(:repo), do: "Ecto repo"
+  defp infra_label(:ecto_type), do: "Ecto type"
+  defp infra_label(:exception), do: "exception"
+  defp infra_label(other), do: to_string(other)
 
   defp group_entry(group) do
     title =
@@ -198,7 +224,7 @@ defmodule Cohere.Map.Renderer do
 
     note =
       if web_prefix,
-        do: "\n_Route modules shown relative to `#{map.project.web_namespace}`._\n",
+        do: "\n_Route modules shown relative to `#{inspect(map.project.web_namespace)}`._\n",
         else: ""
 
     """
@@ -258,10 +284,10 @@ defmodule Cohere.Map.Renderer do
       map.web
       |> Elixir.Map.drop([:modules])
       |> Enum.sort_by(fn {_k, count} -> -count end)
-      |> Enum.map_join(", ", fn {kind, count} -> "#{count} #{format_kind(kind)}" end)
+      |> Enum.map_join(", ", fn {kind, count} -> "#{count} #{format_kind(kind, count)}" end)
 
     """
-    ## Web Layer — #{map.project.web_namespace}
+    ## Web Layer — #{inspect(map.project.web_namespace)}
 
     #{counts}. Derived counts only; the authoritative surface is the Routes section.
     """
@@ -281,13 +307,21 @@ defmodule Cohere.Map.Renderer do
     """
   end
 
-  defp format_kind(:live_view), do: "LiveViews"
-  defp format_kind(:live_component), do: "LiveComponents"
-  defp format_kind(:controller), do: "controllers"
-  defp format_kind(:component), do: "component modules"
-  defp format_kind(:view), do: "view modules"
-  defp format_kind(:router), do: "routers"
-  defp format_kind(kind), do: "#{kind} modules"
+  defp format_kind(kind, count) do
+    singular =
+      case kind do
+        :live_view -> "LiveView"
+        :live_component -> "LiveComponent"
+        :controller -> "controller"
+        :component -> "component module"
+        :view -> "view module"
+        :router -> "router"
+        :module -> "other module"
+        kind -> "#{kind} module"
+      end
+
+    if count == 1, do: singular, else: singular <> "s"
+  end
 
   defp short_name(module) do
     module |> Module.split() |> List.last()

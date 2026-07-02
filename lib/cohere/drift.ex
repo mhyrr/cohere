@@ -183,8 +183,15 @@ defmodule Cohere.Drift do
   defp uncarded_section(%Report{uncarded: []}), do: nil
 
   defp uncarded_section(%Report{uncarded: contexts}) do
-    names = Enum.map_join(contexts, ", ", &inspect/1)
-    "ℹ contexts without intent cards (optional): #{names}"
+    shown = Enum.map_join(Enum.take(contexts, 6), ", ", &inspect/1)
+
+    rest =
+      case length(contexts) - 6 do
+        n when n > 0 -> ", …and #{n} more"
+        _ -> ""
+      end
+
+    "ℹ #{length(contexts)} context(s) without intent cards (optional): #{shown}#{rest}"
   end
 
   defp verdict(report) do

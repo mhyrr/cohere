@@ -10,21 +10,53 @@ defmodule Cohere.Surface do
 
   @generated ~w(child_spec behaviour_info module_info)a
 
+  # OTP machinery, not authored API. Only filtered when the module actually
+  # declares the corresponding behaviour — a plain context that happens to
+  # define init/1 keeps it.
+  @otp_callbacks %{
+    GenServer => [
+      init: 1,
+      handle_call: 3,
+      handle_cast: 2,
+      handle_info: 2,
+      handle_continue: 2,
+      terminate: 2,
+      code_change: 3,
+      format_status: 1,
+      format_status: 2
+    ],
+    Supervisor => [init: 1]
+  }
+
   @doc """
   Sorted list of `{function, arity}` for the module's public surface.
 
-  Filters compiler/framework-generated functions (`__*__`, `child_spec/1`,
-  etc.) so the surface reflects authored API, not machinery.
+  Filters compiler/framework-generated functions (`__*__`, `child_spec/1`)
+  and — for modules declaring GenServer/Supervisor behaviours — the OTP
+  callbacks, so the surface reflects authored API, not machinery.
   """
   @spec functions(module()) :: [{atom(), non_neg_integer()}]
   def functions(module) do
     if Code.ensure_loaded?(module) do
+      callbacks = otp_callbacks(module)
+
       module.__info__(:functions)
-      |> Enum.reject(fn {name, _arity} -> generated?(name) end)
+      |> Enum.reject(fn {name, arity} -> generated?(name) or {name, arity} in callbacks end)
       |> Enum.sort()
     else
       []
     end
+  end
+
+  defp otp_callbacks(module) do
+    behaviours =
+      module.module_info(:attributes)
+      |> Keyword.get_values(:behaviour)
+      |> List.flatten()
+
+    Enum.flat_map(behaviours, &Map.get(@otp_callbacks, &1, []))
+  rescue
+    _ -> []
   end
 
   @doc ~S"""

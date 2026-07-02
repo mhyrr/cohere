@@ -26,6 +26,7 @@ defmodule Fixture.Accounts.User do
     field(:tags, {:array, :string})
     belongs_to(:reviewed_by, Fixture.Accounts.User, foreign_key: :reviewed_by_user_id)
     has_many(:memberships, Fixture.Accounts.Membership)
+    embeds_one(:profile, Fixture.Accounts.Profile)
   end
 end
 
@@ -46,10 +47,30 @@ defmodule Fixture.Accounts.Profile do
 end
 
 defmodule Fixture.Billing do
-  @moduledoc "Wraps the payment provider; owns no data."
+  @moduledoc """
+  Wraps the payment provider; owns no data. This first paragraph runs long
+  enough to overflow the summary budget so that truncation has to engage
+  and cut the text back to the first full sentence boundary cleanly.
+
+  Second paragraph, which must never appear in the map.
+  """
 
   def charge(_amount), do: :ok
   def refund(_charge_id), do: :ok
+end
+
+defmodule Fixture.Vault do
+  @moduledoc "Encrypts secrets at rest."
+  use GenServer
+
+  def start_link(opts \\ []), do: GenServer.start_link(__MODULE__, opts)
+  def encrypt(value), do: {:ok, value}
+
+  @impl true
+  def init(opts), do: {:ok, opts}
+
+  @impl true
+  def handle_call(_msg, _from, state), do: {:reply, :ok, state}
 end
 
 defmodule Fixture.Workers.SyncWorker do
@@ -101,6 +122,7 @@ defmodule Cohere.Fixtures do
     Fixture.Accounts.Membership,
     Fixture.Accounts.Profile,
     Fixture.Billing,
+    Fixture.Vault,
     Fixture.Workers.SyncWorker,
     Fixture.Encrypted.Binary,
     Fixture.Repo,

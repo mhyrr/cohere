@@ -16,6 +16,8 @@ defmodule Cohere.Derive.Modules do
       (integration wrappers like `MyApp.Sheets`)
     * `:passive` — no same-named context module (module collections like
       `MyApp.Workers`)
+    * `:infra` — nothing but plumbing (Application, Repo, Ecto types);
+      rendered as a one-line list, not a context entry
   """
 
   alias Cohere.{Project, Surface}
@@ -90,11 +92,22 @@ defmodule Cohere.Derive.Modules do
     end
   end
 
-  @doc "First line of the module's @moduledoc, or nil."
+  @doc_max 180
+
+  @doc """
+  Compact summary from the module's @moduledoc: the first paragraph,
+  truncated at a sentence boundary rather than mid-line.
+  """
   def doc_line(module) do
     case Code.fetch_docs(module) do
       {:docs_v1, _, _, _, %{"en" => doc}, _, _} when is_binary(doc) ->
-        doc |> String.split("\n", parts: 2) |> hd() |> String.trim()
+        doc
+        |> String.split("\n\n", parts: 2)
+        |> hd()
+        |> String.split("\n")
+        |> Enum.map_join(" ", &String.trim/1)
+        |> String.trim()
+        |> truncate()
 
       _ ->
         nil
@@ -102,6 +115,18 @@ defmodule Cohere.Derive.Modules do
   rescue
     _ -> nil
   end
+
+  defp truncate(text) when byte_size(text) <= @doc_max, do: text
+
+  defp truncate(text) do
+    # Prefer a sentence boundary within budget; fall back to a hard cut.
+    case Regex.run(~r/\A(.{40,#{@doc_max}}?[.!?])\s/su, text) do
+      [_, sentence] -> sentence
+      nil -> String.slice(text, 0, @doc_max - 1) <> "…"
+    end
+  end
+
+  @infra_kinds [:application, :repo, :ecto_type, :exception]
 
   defp build_group(name, members, project) do
     context = Module.concat(project.namespace, name)
@@ -124,7 +149,7 @@ defmodule Cohere.Derive.Modules do
     %Group{
       name: name,
       context: context_entry && context,
-      kind: group_kind(context_entry, schemas),
+      kind: group_kind(context_entry, schemas, members),
       doc: context_entry && doc_line(context),
       functions: functions,
       surface_hash: (context_entry && Surface.hash(functions)) || nil,
@@ -134,9 +159,16 @@ defmodule Cohere.Derive.Modules do
     }
   end
 
-  defp group_kind(nil, _schemas), do: :passive
-  defp group_kind(_context, []), do: :service
-  defp group_kind(_context, _schemas), do: :domain
+  defp group_kind(nil, _schemas, members) do
+    if Enum.all?(members, fn {_m, kind} -> kind in @infra_kinds end) do
+      :infra
+    else
+      :passive
+    end
+  end
+
+  defp group_kind(_context, [], _members), do: :service
+  defp group_kind(_context, _schemas, _members), do: :domain
 
   defp web_summary(web) do
     counts = Enum.frequencies_by(web, fn {m, kind} -> web_kind(m, kind) end)

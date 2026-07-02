@@ -43,6 +43,16 @@ defmodule Cohere.Derive.SchemasTest do
     assert schema.source == nil
   end
 
+  test "embeds are links, not fields" do
+    schema = Schemas.describe(Fixture.Accounts.User)
+
+    refute Enum.any?(schema.fields, &(&1.name == :profile))
+
+    assert schema.embeds == [
+             %{name: :profile, cardinality: :one, related: Fixture.Accounts.Profile}
+           ]
+  end
+
   test "non-schema modules describe to nil" do
     assert Schemas.describe(Fixture.Encrypted.Binary) == nil
     assert Schemas.describe(Fixture.Billing) == nil

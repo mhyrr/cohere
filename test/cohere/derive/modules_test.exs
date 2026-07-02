@@ -24,7 +24,7 @@ defmodule Cohere.Derive.ModulesTest do
 
     test "groups the domain layer by top-level segment", %{inventory: inv} do
       names = Enum.map(inv.groups, & &1.name)
-      assert names == ["Accounts", "Billing", "Encrypted", "Repo", "Workers"]
+      assert names == ["Accounts", "Billing", "Encrypted", "Repo", "Vault", "Workers"]
     end
 
     test "domain context owns schemas and a surface", %{inventory: inv} do
@@ -55,10 +55,32 @@ defmodule Cohere.Derive.ModulesTest do
       assert workers.kind == :passive
       assert workers.context == nil
       assert workers.workers == [Fixture.Workers.SyncWorker]
+    end
 
+    test "pure plumbing collapses to infra", %{inventory: inv} do
       encrypted = Enum.find(inv.groups, &(&1.name == "Encrypted"))
-      assert encrypted.kind == :passive
+      assert encrypted.kind == :infra
       assert encrypted.others == [Fixture.Encrypted.Binary]
+
+      repo = Enum.find(inv.groups, &(&1.name == "Repo"))
+      assert repo.kind == :infra
+    end
+
+    test "a GenServer context keeps its API, loses OTP callbacks", %{inventory: inv} do
+      vault = Enum.find(inv.groups, &(&1.name == "Vault"))
+
+      assert vault.kind == :service
+      assert vault.context == Fixture.Vault
+      assert vault.doc == "Encrypts secrets at rest."
+      assert {:encrypt, 1} in vault.functions
+      assert {:start_link, 0} in vault.functions
+      refute {:init, 1} in vault.functions
+      refute {:handle_call, 3} in vault.functions
+    end
+
+    test "doc summaries truncate at a sentence boundary", %{inventory: inv} do
+      billing = Enum.find(inv.groups, &(&1.name == "Billing"))
+      assert billing.doc == "Wraps the payment provider; owns no data."
     end
 
     test "web modules are counted, routers extracted", %{inventory: inv} do

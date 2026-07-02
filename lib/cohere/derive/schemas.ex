@@ -51,7 +51,9 @@ defmodule Cohere.Derive.Schemas do
   end
 
   defp fields(module, pk) do
-    for field <- module.__schema__(:fields) do
+    embeds = module.__schema__(:embeds)
+
+    for field <- module.__schema__(:fields), field not in embeds do
       %{name: field, type: type_label(module, field), primary_key?: field in pk}
     end
   end
