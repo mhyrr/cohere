@@ -102,6 +102,15 @@ defmodule Cohere.DesignTest do
     assert Design.unmet_promises(doc) == [{"Fixture.Accounts", "reverse_user", 1}]
   end
 
+  test "refs inside skeleton comments are examples, not promises" do
+    # A fresh skeleton's Promised surface holds only a commented example;
+    # it must not block completion (caught dogfooding the negative path).
+    {:ok, doc} = "fresh" |> Design.skeleton(~D[2026-07-03]) |> Design.parse()
+
+    assert Design.promised_refs(doc) == []
+    assert Design.unmet_promises(doc) == []
+  end
+
   test "accept flips status, keeps the design date, logs the acceptance" do
     text = Design.skeleton("feature-x", ~D[2026-07-01], contexts: ["Accounts"])
     {:ok, doc} = text |> Design.accept(~D[2026-07-03]) |> Design.parse()
@@ -147,6 +156,25 @@ defmodule Cohere.DesignTest do
     write_design!(project, "two", Design.skeleton("two", ~D[2026-07-03]))
 
     assert [%{slug: "one"}, %{slug: "two"}] = Design.load_all(project)
+  end
+
+  test "open questions: skeleton prompts don't count, real ones do" do
+    {:ok, bare} = "bare" |> Design.skeleton(~D[2026-07-03]) |> Design.parse()
+    assert Design.open_questions(bare) == nil
+
+    {:ok, doc} =
+      Design.parse("""
+      ---
+      design: x
+      status: draft
+      ---
+
+      ## Open questions
+
+      - Should start infer contexts from the branch diff?
+      """)
+
+    assert Design.open_questions(doc) =~ "infer contexts"
   end
 
   test "the empty-contexts skeleton still parses and prompts for anchors" do

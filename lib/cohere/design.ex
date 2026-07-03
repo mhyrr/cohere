@@ -181,6 +181,15 @@ defmodule Cohere.Design do
   end
 
   @doc """
+  The comment-stripped content of the Open questions section, or nil when
+  it holds nothing but skeleton prompts. Open questions warn at completion
+  and never block (DEC-FEA-007).
+  """
+  def open_questions(%Doc{sections: sections}) do
+    meaningful(sections["Open questions"])
+  end
+
+  @doc """
   Flips a draft's status to accepted and appends a dated Status log line.
   The `date:` frontmatter keeps the design date; the log carries the
   acceptance date.

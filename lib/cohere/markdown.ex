@@ -87,10 +87,12 @@ defmodule Cohere.Markdown do
   @doc """
   Backticked, fully-qualified code references in markdown text:
   `[{module_string, function_name | nil, arity | nil}]`, deduped in order.
+  HTML comments are stripped first — a ref in a skeleton prompt is an
+  example, not a claim.
   """
   def code_refs(text) do
     ~r/`([A-Z][A-Za-z0-9_.]*)(?:\.([a-z_][A-Za-z0-9_?!]*)\/(\d+))?`/
-    |> Regex.scan(text)
+    |> Regex.scan(String.replace(text, ~r/<!--.*?-->/s, ""))
     |> Enum.flat_map(fn
       [_, module] -> [{module, nil, nil}]
       [_, module, fun, arity] -> [{module, fun, String.to_integer(arity)}]

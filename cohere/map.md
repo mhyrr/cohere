@@ -23,11 +23,11 @@ The check verb: every finding cohere can make, in one iterative command — the 
 ### Derive — passive
 **Support:** Modules, Group, Routes, Route, Schemas, Schema, Workers, Worker
 
-### Cohere.Design — service `[surface:e6cbd2db9e6b]`
+### Cohere.Design — service `[surface:6e6a47afb022]`
 
 Design docs: the authored artifact of the feature loop.
 
-**API** (11): accept/2 filename/1 ground/2 issues/3 load_all/1 parse/1 parse/2 promised_refs/1 skeleton/2 skeleton/3 unmet_promises/1
+**API** (12): accept/2 filename/1 ground/2 issues/3 load_all/1 open_questions/1 parse/1 parse/2 promised_refs/1 skeleton/2 skeleton/3 unmet_promises/1
 **Support:** Doc
 
 ### Cohere.Drift — service `[surface:33bec9f41f56]`
@@ -81,6 +81,7 @@ The public function surface of a module, and a stable hash over it.
 - Cohere (namespace root)
 - Mix.Tasks.Cohere (outside app namespaces)
 - Mix.Tasks.Cohere.Check (outside app namespaces)
+- Mix.Tasks.Cohere.Complete (outside app namespaces)
 - Mix.Tasks.Cohere.Design (outside app namespaces)
 - Mix.Tasks.Cohere.Gen.Intent (outside app namespaces)
 - Mix.Tasks.Cohere.Init (outside app namespaces)
