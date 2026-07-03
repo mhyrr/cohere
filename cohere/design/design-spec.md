@@ -1,3 +1,10 @@
+---
+design: design-spec
+status: accepted
+date: 2026-07-01
+contexts:
+---
+
 # A Coherence Layer for Elixir/Phoenix — Research & Concept
 
 **Status:** Recorded for reference — this idea will NOT be built into HIVE.

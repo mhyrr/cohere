@@ -1,6 +1,6 @@
 ---
 design: feature-loop
-status: draft
+status: accepted
 date: 2026-07-03
 contexts: Design, Check, Drift, Intent
 ---
@@ -164,3 +164,4 @@ retires, the finding category keeps its name.
   should check suggest citing the design from the new card?
 
 ## Status log
+- 2026-07-03: accepted — promised surface verified
