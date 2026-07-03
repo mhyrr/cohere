@@ -34,7 +34,7 @@ defmodule Cohere.DriftTest do
     assert report.map_status == :fresh
     assert [%{issues: []}] = report.cards
     assert Drift.Report.clean?(report)
-    assert Drift.format(report) =~ "coherent: no drift detected"
+    assert Drift.format(report) =~ "in sync"
   end
 
   test "stale map produces a bounded line diff", %{project: project, map: map} do

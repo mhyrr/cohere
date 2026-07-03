@@ -13,7 +13,7 @@ defmodule Mix.Tasks.Cohere do
 
   use Mix.Task
 
-  alias Cohere.{Drift, Intent, Project}
+  alias Cohere.{Design, Drift, Intent, Project}
 
   @requirements ["app.config"]
 
@@ -22,6 +22,7 @@ defmodule Mix.Tasks.Cohere do
     project = Project.load()
     report = Drift.check(project)
     cards = Intent.load_all(project)
+    drafts = project |> Design.load_all() |> Enum.filter(&(&1.status == :draft))
 
     guidance = Enum.filter(["AGENTS.md", "CLAUDE.md", "usage-rules.md"], &File.exists?/1)
 
@@ -55,6 +56,17 @@ defmodule Mix.Tasks.Cohere do
       {n, _, _} -> Mix.shell().info("\ncurrent level: #{n}")
       nil -> Mix.shell().info("\ncurrent level: 0 — start with `mix cohere.init`")
     end
+
+    case drafts do
+      [] ->
+        :ok
+
+      drafts ->
+        flights =
+          Enum.map_join(drafts, ", ", fn doc -> "#{doc.slug} (draft since #{doc.date})" end)
+
+        Mix.shell().info("in flight: #{flights}")
+    end
   end
 
   defp level1([]), do: {:missing, "no AGENTS.md / CLAUDE.md / usage-rules.md"}
@@ -72,7 +84,7 @@ defmodule Mix.Tasks.Cohere do
     if drifted == 0 do
       {:ok, "#{length(cards)} card(s), all in sync"}
     else
-      {:partial, "#{length(cards)} card(s), #{drifted} drifted — `mix cohere.drift`"}
+      {:partial, "#{length(cards)} card(s), #{drifted} drifted — `mix cohere.check`"}
     end
   end
 

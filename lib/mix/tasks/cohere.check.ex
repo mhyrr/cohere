@@ -1,14 +1,17 @@
-defmodule Mix.Tasks.Cohere.Drift do
-  @shortdoc "Checks for drift between code, map, and intent cards"
+defmodule Mix.Tasks.Cohere.Check do
+  @shortdoc "Checks coherence — map, cards, and designs in one pass"
 
   @moduledoc """
-  Runs the drift sentinel: is the committed map fresh, does every intent
-  card still match its context's public surface, and do card references
-  still point at real code?
+  The check verb of the feature loop: run it anytime, locally or in CI;
+  fix what it lists and run it again.
 
-      $ mix cohere.drift             # check; exits non-zero on drift (CI gate)
-      $ mix cohere.drift --accept deals   # rebind the deals card to the current
-                                          # surface with a dated annotation
+      $ mix cohere.check                  # exit 1 on hard drift (the CI gate)
+      $ mix cohere.check --accept deals   # rebind the deals card after re-review
+
+  Hard findings fail the build: a stale map, an intent card whose context
+  surface moved since review, a card referencing dead code. Design docs
+  only ever produce advisories — an accepted design is a dated record, and
+  drift on history is information, not a build failure.
 
   Accepting drift is a review action: re-read the card against the current
   map first. The annotation records that the surface change was seen and
@@ -17,7 +20,7 @@ defmodule Mix.Tasks.Cohere.Drift do
 
   use Mix.Task
 
-  alias Cohere.{Drift, Intent, Map, Project}
+  alias Cohere.{Check, Intent, Map, Project}
 
   @requirements ["app.config"]
 
@@ -33,10 +36,10 @@ defmodule Mix.Tasks.Cohere.Drift do
   end
 
   defp check(project) do
-    report = Drift.check(project)
-    Mix.shell().info(Drift.format(report))
+    report = Check.check(project)
+    Mix.shell().info(Check.format(report))
 
-    unless Drift.Report.clean?(report) do
+    unless Check.Report.clean?(report) do
       exit({:shutdown, 1})
     end
   end

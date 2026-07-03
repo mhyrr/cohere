@@ -49,13 +49,16 @@ defmodule Cohere.Drift do
     }
   end
 
-  @doc "Formats a report for terminal/CI output."
+  @doc """
+  Formats a report's findings for terminal/CI output. No verdict line —
+  `Cohere.Check.format/1` owns the verdict, since drift findings are one
+  category among the checks it composes.
+  """
   def format(%Report{} = report) do
     [
       map_section(report),
       Enum.map(report.cards, &card_section/1),
-      uncarded_section(report),
-      verdict(report)
+      uncarded_section(report)
     ]
     |> List.flatten()
     |> Enum.reject(&is_nil/1)
@@ -171,7 +174,7 @@ defmodule Cohere.Drift do
           removed = Enum.map(removed, fn {f, a} -> "−#{f}/#{a}" end)
 
           "  surface drifted: #{Enum.join(added ++ removed, " ")}\n" <>
-            "  → re-review the card, then `mix cohere.drift --accept #{card_slug(status.card)}`"
+            "  → re-review the card, then `mix cohere.check --accept #{card_slug(status.card)}`"
 
         {:broken_ref, ref} ->
           "  broken reference: #{ref}"
@@ -192,14 +195,6 @@ defmodule Cohere.Drift do
       end
 
     "ℹ #{length(contexts)} context(s) without intent cards (optional): #{shown}#{rest}"
-  end
-
-  defp verdict(report) do
-    if Report.clean?(report) do
-      "\ncoherent: no drift detected"
-    else
-      "\ndrift detected"
-    end
   end
 
   defp card_name(card), do: card.path || inspect(card.context)
