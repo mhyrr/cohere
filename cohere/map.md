@@ -37,17 +37,17 @@ The derived map: the actual shape of the system, assembled from reflection over 
 **API** (3): build/1 fetch_group/2 render/1
 **Support:** Renderer
 
-### Cohere.Packet — service `[surface:7646998fe0ae]`
+### Cohere.Packet — service `[surface:ddbe6f209766]`
 
 Assembles a work packet: context delivered, not discovered.
 
-**API** (1): build/2
+**API** (4): build/2 build_for_files/2 contexts_for_files/3 group_index/1
 
-### Cohere.Project — service `[surface:ce0491901a00]`
+### Cohere.Project — service `[surface:99bb8427aebc]`
 
 Discovers the host project: its OTP app, module inventory, namespaces, and which coherence-relevant capabilities are present.
 
-**API** (5): has?/2 intent_dir/1 load/0 load/1 map_path/1
+**API** (6): has?/2 intent_dir/1 load/0 load/1 map_path/1 source_index/1
 
 ### Cohere.Surface — service `[surface:8ed33ba5b8aa]`
 

@@ -17,5 +17,9 @@ Initial release: the coherence ladder for Elixir/Phoenix.
   checks; exit 1 for CI; `--accept` rebinds with a dated annotation.
 - Work packets (`mix cohere.packet`): map slices + inlined cards +
   name-matched routes + runtime-verification pointers (Tidewave-aware).
+  `--diff` assembles the packet for exactly the contexts the current branch
+  touches — changed files mapped to contexts by reflection over compiled
+  modules, not path convention; unmapped files reported, never dropped
+  silently. `--base REF` sets the ref to diff against (default `main`).
 - Ladder status (`mix cohere`) and scaffolding (`mix cohere.init`).
 - Zero runtime dependencies; no LLM calls anywhere.

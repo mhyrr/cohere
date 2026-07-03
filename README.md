@@ -59,6 +59,7 @@ Then, incrementally:
 $ mix cohere.gen.intent deals      # card skeleton, born bound to the current surface
 $ mix cohere.drift                 # CI gate: exit 1 on any drift
 $ mix cohere.packet deals billing  # assemble delivered context for a task
+$ mix cohere.packet --diff         # …or for exactly the contexts this branch touches
 ```
 
 ## What the map looks like
@@ -130,7 +131,7 @@ work packets direct agents to verify behavior in the running app
 | `mix cohere.map` | regenerate the derived map |
 | `mix cohere.drift` | drift check; exit 1 on drift (`--accept <card>` to rebind) |
 | `mix cohere.gen.intent <ctx>` | intent card skeleton (`--all`, `--force`) |
-| `mix cohere.packet <ctx…>` | assemble a work packet (`--out FILE`) |
+| `mix cohere.packet <ctx…>` | assemble a work packet; `--diff` for the contexts this branch touches (`--base REF`, `--out FILE`) |
 
 ## Configuration
 

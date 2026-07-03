@@ -82,6 +82,40 @@ defmodule Cohere.Project do
   @doc "Whether a capability was detected."
   def has?(%__MODULE__{capabilities: caps}, cap), do: Map.has_key?(caps, cap)
 
+  @doc """
+  Maps each source file (relative to the project root) to the modules
+  compiled from it, by reflecting over `module_info(:compile)`.
+
+  This is how a set of changed files becomes the contexts they belong to:
+  reflection over compiled artifacts, never a path→module naming convention.
+  A file compiled outside the current root (e.g. a build cache on another
+  machine) relativizes to an absolute path and simply won't match a
+  repo-relative diff entry — it drops out rather than mapping wrongly.
+  """
+  @spec source_index(t()) :: %{String.t() => [module()]}
+  def source_index(%__MODULE__{modules: modules}) do
+    root = File.cwd!()
+
+    Enum.reduce(modules, %{}, fn module, acc ->
+      case source_file(module, root) do
+        nil -> acc
+        rel -> Map.update(acc, rel, [module], &[module | &1])
+      end
+    end)
+  end
+
+  defp source_file(module, root) do
+    with true <- Code.ensure_loaded?(module),
+         compile when is_list(compile) <- module.module_info(:compile),
+         source when not is_nil(source) <- compile[:source] do
+      source |> to_string() |> Path.relative_to(root)
+    else
+      _ -> nil
+    end
+  rescue
+    _ -> nil
+  end
+
   defp config(key), do: Application.get_env(:cohere, key)
 
   defp app_modules(app) do

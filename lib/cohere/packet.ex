@@ -38,9 +38,79 @@ defmodule Cohere.Packet do
     end
   end
 
-  defp render(project, map, groups, cards) do
+  @doc """
+  Builds a packet for the contexts touched by a set of changed files —
+  typically a branch diff (`mix cohere.packet --diff`).
+
+  Returns `{:ok, markdown, report}` where `report` is
+  `%{contexts: [name], unmapped: [file]}`, or
+  `{:error, {:no_contexts, unmapped}}` when nothing mapped. The packet
+  carries a scope note listing the contexts covered and the changed files
+  that did not map to any — never a silent slice.
+  """
+  @spec build_for_files(Project.t(), [String.t()]) ::
+          {:ok, String.t(), map()} | {:error, {:no_contexts, [String.t()]}}
+  def build_for_files(%Project{} = project, files) when is_list(files) do
+    map = Map.build(project)
+    report = contexts_for_files(map, Project.source_index(project), files)
+
+    case report.contexts do
+      [] ->
+        {:error, {:no_contexts, report.unmapped}}
+
+      contexts ->
+        cards = Intent.load_all(project)
+        groups = Enum.map(contexts, &Map.fetch_group(map, &1))
+        {:ok, render(project, map, groups, cards, scope_section(files, report)), report}
+    end
+  end
+
+  @doc """
+  Resolves changed files to the context groups that own them, using a
+  `%{source_path => [module]}` index (see `Cohere.Project.source_index/1`).
+
+  Returns `%{contexts: [name], unmapped: [file]}`, contexts deduped in
+  first-seen order. A file whose modules belong to no context group —
+  web modules, config, migrations, non-source — lands in `unmapped`.
+  """
+  @spec contexts_for_files(Map.t(), %{String.t() => [module()]}, [String.t()]) :: map()
+  def contexts_for_files(%Map{} = map, source_index, files) do
+    index = group_index(map)
+
+    {contexts, unmapped} =
+      Enum.reduce(files, {[], []}, fn file, {ctx, un} ->
+        names =
+          (source_index[file] || [])
+          |> Enum.map(&index[&1])
+          |> Enum.reject(&is_nil/1)
+
+        case names do
+          [] -> {ctx, [file | un]}
+          names -> {names ++ ctx, un}
+        end
+      end)
+
+    %{contexts: contexts |> Enum.reverse() |> Enum.uniq(), unmapped: Enum.reverse(unmapped)}
+  end
+
+  @doc "Reverse index: every module owned by a context group → the group name."
+  @spec group_index(Map.t()) :: %{module() => String.t()}
+  def group_index(%Map{groups: groups}) do
+    for group <- groups,
+        module <- group_modules(group),
+        into: %{},
+        do: {module, group.name}
+  end
+
+  defp group_modules(group) do
+    [group.context | group.schemas ++ group.workers ++ group.others]
+    |> Enum.reject(&is_nil/1)
+  end
+
+  defp render(project, map, groups, cards, scope \\ nil) do
     [
       header(project, groups),
+      scope,
       Enum.map(groups, &context_section(project, map, &1, cards)),
       runtime_section(project),
       pointers_section(project)
@@ -50,6 +120,30 @@ defmodule Cohere.Packet do
     |> Enum.join("\n")
     |> String.trim_trailing()
     |> Kernel.<>("\n")
+  end
+
+  @unmapped_cap 25
+
+  defp scope_section(files, %{contexts: contexts, unmapped: unmapped}) do
+    """
+    > **Branch scope** — assembled from #{length(files)} changed file(s).
+    > Contexts touched: #{Enum.join(contexts, ", ")}.
+    #{unmapped_note(unmapped)}
+    """
+  end
+
+  defp unmapped_note([]), do: ">\n> All changed files mapped to a context."
+
+  defp unmapped_note(unmapped) do
+    shown = Enum.take(unmapped, @unmapped_cap)
+    more = length(unmapped) - length(shown)
+    tail = if more > 0, do: "\n> …and #{more} more.", else: ""
+
+    ">\n> #{length(unmapped)} changed file(s) did not map to a context " <>
+      "(web, config, migrations, or non-source). Web files are not yet traced " <>
+      "to the domain contexts they call — that needs the call-topology deriver. " <>
+      "Verify these by hand:\n" <>
+      Enum.map_join(shown, "\n", &"> - #{&1}") <> tail
   end
 
   defp header(project, groups) do

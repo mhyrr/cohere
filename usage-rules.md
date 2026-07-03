@@ -18,7 +18,10 @@
   silently contradict a card.
 - Before starting work that touches a context, run
   `mix cohere.packet <contexts>` and read it instead of re-exploring the
-  repo. Trust the map for shape; read code for behavior.
+  repo. Trust the map for shape; read code for behavior. On an existing
+  branch, `mix cohere.packet --diff` assembles the packet for exactly the
+  contexts you changed; read its "Branch scope" note for changed files that
+  did not map to a context and verify those by hand.
 - Do not copy facts from the map or cards into other documents. Link to
   them. One truth per fact.
 - `mix cohere.drift` must exit 0 before a PR is done. Fix or accept —
