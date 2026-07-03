@@ -13,7 +13,8 @@ and codebases drift as hundreds of locally-reasonable changes accumulate
 with no shared frame. Cohere makes coherence a **measurable property of the
 project** instead of a hoped-for behavior of the agent.
 
-It does this with two artifacts and a sentinel:
+It does this with three document kinds in one directory, each checked as
+hard as its nature allows:
 
 - **The map** — the actual shape of your system, *derived* from the
   compiled application: contexts and their public API, Ecto schemas with
@@ -23,11 +24,12 @@ It does this with two artifacts and a sentinel:
 - **Intent cards** — one small authored file per context holding only what
   cannot be derived: purpose, invariants, decisions with their rejected
   alternatives, non-goals. Each card is hash-bound to its context's public
-  surface.
-- **The drift sentinel** — a CI gate that fails when the map is stale, when
-  a card's surface moved out from under it, or when a card references code
-  that no longer exists. Drift is fixed or explicitly accepted with a dated
-  annotation — never silent.
+  surface. Living constraints, kept fresh by the check gate.
+- **Design docs** — one authored file per design: problem, existing
+  ground, shape, promised surface, decisions. Drafts are work in flight;
+  accepted designs are immutable, dated history. The design conversation
+  you'd have anyway, landing in one format the tooling reads — instead of
+  a hairy pile of wiki pages and gists no gate keeps honest.
 
 No LLM calls. Zero runtime dependencies. Everything is deterministic and
 CI-runnable; models *consume* the outputs but are never required to
@@ -57,10 +59,54 @@ Then, incrementally:
 
 ```console
 $ mix cohere.gen.intent deals      # card skeleton, born bound to the current surface
-$ mix cohere.drift                 # CI gate: exit 1 on any drift
+$ mix cohere.check                 # CI gate: exit 1 on any drift
 $ mix cohere.packet deals billing  # assemble delivered context for a task
 $ mix cohere.packet --diff         # …or for exactly the contexts this branch touches
 ```
+
+## The feature loop
+
+The developer surface is three verbs; everything else is plumbing their
+output points at.
+
+```console
+$ mix cohere.design deal-reversals --contexts deals   # START
+  ... design in the doc, against its Existing ground ...
+$ mix cohere.check                                    # CHECK — anytime; fix, repeat
+  ... build ...
+$ mix cohere.check                                    # same command, new findings
+$ mix cohere.complete deal-reversals                  # COMPLETE — when check is quiet
+```
+
+**Start** scaffolds `cohere/design/deal-reversals.md` (status: draft) and
+assembles its *Existing ground*: each anchored context's current API from
+the map, plus the invariants and decisions from its intent card. A no-LLM
+tool can't judge that your design contradicts INV-DEA-002 — it delivers
+INV-DEA-002 onto the page where you're designing, so the contradiction
+gets seen. The tool assembles; the mind judges.
+
+**Check** is one iterative command, identical locally and in CI. Hard
+findings exit 1: stale map, drifted cards, dead card references. Design
+findings are advisories, never failures — an accepted design is a dated
+record, and drift on history is information, not a bug. A drifted card
+means: re-read it against the new surface, update what your change
+invalidated, then `mix cohere.check --accept deals`. Accepted drift is
+documented drift; the failure mode this tool exists to kill is the
+*silent* kind.
+
+**Complete** is the land step, one command. It regenerates the map,
+requires the check hard-clean (which forces the card re-review where the
+design's durable decisions get distilled into cards), then verifies every
+backticked ref in the design's *Promised surface* exists in the compiled
+app. A design that promised `reverse_deal/1` cannot complete until
+`reverse_deal/1` exists — the design doc is a mechanically checkable
+spec, not aspirational prose. On success: `draft → accepted`, dated,
+immutable. New thinking later? A new design with `supersedes:` in its
+frontmatter — history is superseded, never rewritten.
+
+The PR that lands a feature carries the map delta (the ontology change),
+the card delta (the intent change), the accepted design (the why), and
+the code — reviewable together.
 
 ## What the map looks like
 
@@ -86,21 +132,22 @@ Enum vocabularies, custom foreign keys, queue/cron wiring from config —
 the facts agents otherwise rediscover by grepping, delivered in one
 git-tracked file whose PR diff *is* the ontology change.
 
-## The drift workflow
+## What check finds
 
 ```console
-$ mix cohere.drift
+$ mix cohere.check
 ✗ cohere/intent/deals.md
   surface drifted: +approve_deal/1
-  → re-review the card, then `mix cohere.drift --accept deals`
+  → re-review the card, then `mix cohere.check --accept deals`
+⚠ cohere/design/deal-reversals.md — draft, advisory only
+  anchor "Reversals" not in the map — fine if this design introduces it;
+  `mix cohere.complete` verifies it lands
 
-$ mix cohere.drift --accept deals
+drift detected
+
+$ mix cohere.check --accept deals
 cohere/intent/deals.md — rebound to surface df8be63a83b8, drift annotated
 ```
-
-Accepting appends a dated annotation to the card's `## Accepted drift`
-section. Accepted drift is documented drift; the failure mode this tool
-exists to kill is the *silent* kind.
 
 ## The coherence ladder
 
@@ -126,10 +173,12 @@ work packets direct agents to verify behavior in the running app
 
 | Task | Does |
 |---|---|
-| `mix cohere` | ladder status |
+| `mix cohere` | ladder status + designs in flight |
 | `mix cohere.init` | scaffold `cohere/`, first map, workflow README |
+| `mix cohere.design <slug>` | start a design: draft doc + existing ground (`--contexts a,b`) |
+| `mix cohere.check` | the iterative check + CI gate; exit 1 on hard drift (`--accept <card>` to rebind) |
+| `mix cohere.complete <slug>` | verify the design's promises landed, flip it to accepted |
 | `mix cohere.map` | regenerate the derived map |
-| `mix cohere.drift` | drift check; exit 1 on drift (`--accept <card>` to rebind) |
 | `mix cohere.gen.intent <ctx>` | intent card skeleton (`--all`, `--force`) |
 | `mix cohere.packet <ctx…>` | assemble a work packet; `--diff` for the contexts this branch touches (`--base REF`, `--out FILE`) |
 
@@ -147,9 +196,11 @@ config :cohere,
 
 ## Design constraints
 
-- **Derived or checked, nothing else.** Every artifact is either
-  regenerated from code (cannot drift) or authored-but-hash-bound (drift is
-  mechanically detected). Anything else is future lies.
+- **Derived or checked, nothing else.** Every artifact gets the strongest
+  binding its nature allows: the map is regenerated from code (cannot
+  drift), cards are authored-but-hash-bound (drift fails the build), and
+  designs are authored-but-dated — anchored to the map, promise-verified
+  at completion, advisory ever after. Unbound prose is future lies.
 - **Zero runtime dependencies.** Ecto/Phoenix appear only as test deps for
   fixture reflection. Consumers inherit nothing.
 - **No LLM calls.** Deterministic, CI-runnable, same bytes for same code.
@@ -160,7 +211,10 @@ The full research and design rationale — what Palantir's Ontology and
 8090's Software Factory are actually selling, why the failure modes of
 spec-driven development all point the same direction, and why Elixir is
 the cheapest stack to build this on — lives in
-[docs/design-spec.md](docs/design-spec.md).
+[cohere/design/design-spec.md](cohere/design/design-spec.md), an accepted
+design doc in cohere's own coherence layer. The feature loop's own design
+is [cohere/design/feature-loop.md](cohere/design/feature-loop.md) —
+completed by the tool it specifies.
 
 ## License
 

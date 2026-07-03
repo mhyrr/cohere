@@ -8,8 +8,8 @@ defmodule Cohere do
   detect when the project has drifted from that intent.
 
   Cohere makes that a measurable property of the project rather than a
-  behavior of the agent, via three artifacts and the tooling that keeps
-  them honest:
+  behavior of the agent, via three document kinds and the tooling that
+  keeps them honest:
 
     * **The map** (`mix cohere.map`) — a compact, git-tracked description of
       the system's actual shape, derived from the compiled application:
@@ -20,12 +20,18 @@ defmodule Cohere do
     * **Intent cards** (`mix cohere.gen.intent`) — one small authored file
       per context holding only what cannot be derived: purpose, invariants,
       decisions with rejected alternatives, non-goals. Each card is bound to
-      the context's public surface by hash.
+      the context's public surface by hash. Living constraints.
 
-    * **The drift sentinel** (`mix cohere.drift`) — CI-runnable check that
-      the map matches the code and every card matches its context's surface.
-      Drift is fixed or explicitly accepted with a dated annotation — never
-      silent.
+    * **Design docs** (`mix cohere.design`) — one authored file per design:
+      problem, existing ground, shape, promised surface, decisions. Drafts
+      are work in flight; accepted designs are immutable history.
+
+  The developer surface is the **feature loop**, three verbs:
+  `mix cohere.design <slug>` starts a design with its ground delivered
+  onto the page; `mix cohere.check` is the one iterative command (and CI
+  gate — hard findings exit 1, design findings only advise); and
+  `mix cohere.complete <slug>` verifies the design's promised surface
+  exists in the compiled app, then flips it to accepted.
 
   Work packets (`mix cohere.packet`) assemble the map slice and cards for
   the contexts a task touches, so context is delivered to an agent rather
@@ -38,7 +44,7 @@ defmodule Cohere do
   | 0 | Context by discovery | raw repo; agents grep and hope |
   | 1 | Static guidance | AGENTS.md / usage-rules |
   | 2 | Derived truth | the map |
-  | 3 | Authored intent, checked | intent cards + drift sentinel |
+  | 3 | Authored intent, checked | intent cards + design docs + the check gate |
   | 4 | Governed verbs, verified behavior | boundary enforcement, Tidewave runtime |
   | 5 | Delivered context | work packets |
 

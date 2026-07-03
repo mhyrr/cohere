@@ -10,9 +10,21 @@
   decisions, non-goals. Edit the sections freely; NEVER edit the
   frontmatter (`context`/`reviewed`/`surface`/`functions`) by hand — it is
   machine-managed.
-- When `mix cohere.drift` reports a drifted card: re-read the card against
+- When `mix cohere.check` reports a drifted card: re-read the card against
   the current map, update any invalidated content, then run
-  `mix cohere.drift --accept <card>`. Do not accept without re-reading.
+  `mix cohere.check --accept <card>`. Do not accept without re-reading.
+- Non-trivial change? Start with `mix cohere.design <slug> --contexts <ctx>`
+  and design in the doc, against its Existing ground section. Record
+  decisions with their rejected alternatives; list the code you commit to
+  delivering under Promised surface as backticked `Module.fun/arity` refs.
+- `cohere/design/*.md` frontmatter is machine-managed except `contexts:`
+  and `supersedes:`. Never flip `status:` by hand — that is
+  `mix cohere.complete <slug>`, which verifies the promised surface exists
+  before accepting. Accepted designs are immutable history: supersede with
+  a new design, never edit.
+- When a card re-review happens after a design lands, distill the design's
+  durable decisions into the card and cite the design by slug — the card
+  is the living constraint; the design is the record of the conversation.
 - A violated invariant or superseded decision in a card is either a bug in
   your change or a deliberate supersession — surface it explicitly; never
   silently contradict a card.
@@ -24,5 +36,5 @@
   did not map to a context and verify those by hand.
 - Do not copy facts from the map or cards into other documents. Link to
   them. One truth per fact.
-- `mix cohere.drift` must exit 0 before a PR is done. Fix or accept —
-  never ignore.
+- `mix cohere.check` must exit 0 before a PR is done. Fix or accept —
+  never ignore. Design advisories don't fail the build; read them anyway.
