@@ -79,6 +79,9 @@ defmodule Cohere.Project do
   @doc "Directory holding authored intent cards."
   def intent_dir(%__MODULE__{dir: dir}), do: Path.join(dir, "intent")
 
+  @doc "Directory holding authored design docs."
+  def design_dir(%__MODULE__{dir: dir}), do: Path.join(dir, "design")
+
   @doc "Whether a capability was detected."
   def has?(%__MODULE__{capabilities: caps}, cap), do: Map.has_key?(caps, cap)
 
