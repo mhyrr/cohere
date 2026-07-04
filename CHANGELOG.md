@@ -31,4 +31,7 @@ Initial release: the coherence ladder for Elixir/Phoenix.
   modules, not path convention; unmapped files reported, never dropped
   silently. `--base REF` sets the ref to diff against (default `main`).
 - Ladder status (`mix cohere`) and scaffolding (`mix cohere.init`).
+  `mix cohere.design` with no arguments lists designs with statuses; the
+  ladder always states design status affirmatively when designs exist
+  ("none in flight" is a claim, not an absence).
 - Zero runtime dependencies; no LLM calls anywhere.

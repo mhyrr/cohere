@@ -2,8 +2,9 @@ defmodule Mix.Tasks.Cohere.Design do
   @shortdoc "Starts a design: scaffolds a draft doc with its existing ground"
 
   @moduledoc """
-  The start verb of the feature loop.
+  The start verb of the feature loop — and, with no arguments, the listing.
 
+      $ mix cohere.design                                    # list designs + statuses
       $ mix cohere.design deal-reversals --contexts deals,billing
 
   Scaffolds `cohere/design/deal-reversals.md` (status: draft) and
@@ -28,13 +29,58 @@ defmodule Mix.Tasks.Cohere.Design do
   def run(args) do
     {opts, argv} = OptionParser.parse!(args, strict: [contexts: :string])
 
-    slug =
-      case argv do
-        [slug] -> validate_slug!(slug)
-        _ -> Mix.raise("usage: mix cohere.design <slug> [--contexts deals,billing]")
-      end
+    case argv do
+      [] -> list(Project.load())
+      [slug] -> start(Project.load(), validate_slug!(slug), opts)
+      _ -> Mix.raise("usage: mix cohere.design [<slug>] [--contexts deals,billing]")
+    end
+  end
 
-    project = Project.load()
+  defp list(project) do
+    case Design.load_all(project) do
+      [] ->
+        Mix.shell().info(
+          "no designs yet — start one: mix cohere.design <slug> --contexts <contexts>"
+        )
+
+      docs ->
+        width = docs |> Enum.map(&String.length(&1.slug)) |> Enum.max()
+
+        lines =
+          Enum.map(docs, fn doc ->
+            "  #{String.pad_trailing(doc.slug, width)}  " <>
+              "#{String.pad_trailing(to_string(doc.status), 10)}  #{doc.date}" <>
+              supersedes_note(doc) <> flight_note(doc)
+          end)
+
+        drafts = Enum.count(docs, &(&1.status == :draft))
+
+        summary =
+          case drafts do
+            0 -> "none in flight"
+            n -> "#{n} in flight"
+          end
+
+        Mix.shell().info(
+          Enum.join(
+            ["#{Project.design_dir(project)} — #{length(docs)} design(s)", "" | lines],
+            "\n"
+          ) <>
+            "\n\n#{summary}"
+        )
+    end
+  end
+
+  defp supersedes_note(%{supersedes: nil}), do: ""
+  defp supersedes_note(%{supersedes: slug}), do: "  (supersedes #{slug})"
+
+  defp flight_note(%{status: :draft, slug: slug}) do
+    "  ← in flight; `mix cohere.complete #{slug}` when built"
+  end
+
+  defp flight_note(_doc), do: ""
+
+  defp start(project, slug, opts) do
     dir = Project.design_dir(project)
     path = Path.join(dir, Design.filename(slug))
 

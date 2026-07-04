@@ -175,7 +175,7 @@ work packets direct agents to verify behavior in the running app
 |---|---|
 | `mix cohere` | ladder status + designs in flight |
 | `mix cohere.init` | scaffold `cohere/`, first map, workflow README |
-| `mix cohere.design <slug>` | start a design: draft doc + existing ground (`--contexts a,b`) |
+| `mix cohere.design [<slug>]` | no args: list designs + statuses; with a slug: start a design (`--contexts a,b`) |
 | `mix cohere.check` | the iterative check + CI gate; exit 1 on hard drift (`--accept <card>` to rebind) |
 | `mix cohere.complete <slug>` | verify the design's promises landed, flip it to accepted |
 | `mix cohere.map` | regenerate the derived map |

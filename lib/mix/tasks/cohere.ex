@@ -18,11 +18,18 @@ defmodule Mix.Tasks.Cohere do
   @requirements ["app.config"]
 
   @impl Mix.Task
-  def run(_args) do
+  def run(args) do
+    unless args == [] do
+      Mix.raise(
+        "mix cohere takes no arguments. Try: mix cohere.design (list designs), " <>
+          "mix cohere.check (the gate), mix cohere.complete <slug> (land a draft)"
+      )
+    end
+
     project = Project.load()
     report = Drift.check(project)
     cards = Intent.load_all(project)
-    drafts = project |> Design.load_all() |> Enum.filter(&(&1.status == :draft))
+    designs = Design.load_all(project)
 
     guidance = Enum.filter(["AGENTS.md", "CLAUDE.md", "usage-rules.md"], &File.exists?/1)
 
@@ -57,14 +64,28 @@ defmodule Mix.Tasks.Cohere do
       nil -> Mix.shell().info("\ncurrent level: 0 — start with `mix cohere.init`")
     end
 
+    designs_line(designs)
+  end
+
+  # Affirmative either way: "nothing in flight" must be distinguishable
+  # from "designs unused". Quiet only when there are no designs at all.
+  defp designs_line([]), do: :ok
+
+  defp designs_line(designs) do
+    drafts = Enum.filter(designs, &(&1.status == :draft))
+    settled = length(designs) - length(drafts)
+
     case drafts do
       [] ->
-        :ok
+        Mix.shell().info("designs: #{settled} accepted/superseded, none in flight")
 
       drafts ->
         flights =
-          Enum.map_join(drafts, ", ", fn doc -> "#{doc.slug} (draft since #{doc.date})" end)
+          Enum.map_join(drafts, ", ", fn doc ->
+            "#{doc.slug} (draft since #{doc.date} — `mix cohere.complete #{doc.slug}` when built)"
+          end)
 
+        Mix.shell().info("designs: #{length(drafts)} in flight, #{settled} settled")
         Mix.shell().info("in flight: #{flights}")
     end
   end
