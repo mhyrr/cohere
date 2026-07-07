@@ -2,6 +2,10 @@
 
 **A coherence layer for Elixir/Phoenix projects.**
 
+Docs live at [mhyrr.github.io/cohere](https://mhyrr.github.io/cohere/):
+the ladder, the loop, the document kinds, and the FAQ, with an
+[llms.txt](https://mhyrr.github.io/cohere/llms.txt) for agents.
+
 > A project is coherent to the degree that, at any point in its development,
 > it can furnish any actor — human or model — with the minimal context
 > sufficient to act in line with the user's intent, and can mechanically
@@ -115,17 +119,17 @@ language of the business, because they are the business — reflected out of
 the compiled code:
 
 ```markdown
-### Revrec.Deals — domain `[surface:df8be63a83b8]`
+### MyApp.Deals — domain `[surface:df8be63a83b8]`
 
 **API** (32): approve_deal/1 create_deal/1 extract_deal_data/1 get_financial_summary/1 …
 **Schemas:** Deal, DealParty, DealPartyFeeComponent
 **Support:** AccountKeys, DealReset, EditTracker, Insights, JournalCalculator
 
-### Revrec.Deals.Deal → `deals`
+### MyApp.Deals.Deal → `deals`
 - fields: …, side:enum(listing|buyer|both|lease|referral),
   status:enum(draft|needs_review|approved|posting|posted|posting_failed|reversed), …
-- belongs_to reviewed_by → Revrec.Users.User via reviewed_by_user_id
-- belongs_to agency → Revrec.Agencies.Agency via agency_id
+- belongs_to reviewed_by → MyApp.Users.User via reviewed_by_user_id
+- belongs_to agency → MyApp.Agencies.Agency via agency_id
 ```
 
 Enum vocabularies, custom foreign keys, queue/cron wiring from config —

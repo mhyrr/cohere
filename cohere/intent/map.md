@@ -28,9 +28,9 @@ because nobody authors it.
 
 - DEC-MAP-001 (2026-07-02): classification is functional, not name-based
   (`__schema__/1` makes a schema, `Oban.Worker` behaviour makes a worker).
-  Named after the revrec traps: a Cloak type living in the schema layer,
-  contexts with zero CRUD-named functions. Rejected: source
-  regex/AST scanning — names lie, compiled modules don't.
+  Named after traps in the first production validation: a Cloak type
+  living in the schema layer, contexts with zero CRUD-named functions.
+  Rejected: source regex/AST scanning — names lie, compiled modules don't.
 - DEC-MAP-002 (2026-07-02): one markdown artifact, one line per fact.
   Rejected: a JSON twin (a second rendering to keep honest) and markdown
   tables (token-heavy, not greppable).

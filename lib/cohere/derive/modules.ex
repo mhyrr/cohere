@@ -5,8 +5,9 @@ defmodule Cohere.Derive.Modules do
 
   Classification is functional, not name-based: a schema is a module that
   exports `__schema__/1`, a repo exports `__adapter__/0`, a worker declares
-  the `Oban.Worker` behaviour. Names lie (revrec's `Encrypted.Binary` lives
-  in the schema layer but is a Cloak type); compiled modules don't.
+  the `Oban.Worker` behaviour. Names lie (one validation app's
+  `Encrypted.Binary` lives in the schema layer but is a Cloak type);
+  compiled modules don't.
 
   A *context group* is everything under one top-level segment of the app
   namespace (`MyApp.Deals` + `MyApp.Deals.*`). Its kind:
