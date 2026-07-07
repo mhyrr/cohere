@@ -4,10 +4,10 @@ nav: 7
 description: Context delivered, not discovered. The coherence layer assembled for one task.
 ---
 
-Everything else on this site is about *keeping* the project coherent.
-Packets are about *spending* that coherence: one command assembles the
-minimal context an actor needs for a task, so the session starts
-informed instead of starting with an archaeology dig.
+The rest of this site is about *keeping* the project coherent.
+Packets spend that coherence: one command assembles the minimal
+context an actor needs for a task, so the session starts informed
+instead of opening with an archaeology dig.
 
 ```console
 $ mix cohere.packet deals billing        # context for named contexts
@@ -27,9 +27,10 @@ the packet for the work actually in flight.
 ## Link, don't restate
 
 A packet carries source records and pointers; it never paraphrases
-code into a second truth. The map slice is the derived record; the
-card is the authored record; everything else is a path. Paraphrase is
-how context layers rot; the packet format refuses it structurally.
+code into a second truth. The map slice is the derived record, the
+card is the authored record, and the rest is pointers into source.
+Paraphrase is how context layers rot, so the format simply has no
+place for it.
 
 ## Runtime verification, when it's there
 

@@ -47,12 +47,12 @@ to produce them.</p>
 <h2 id="three-documents-checked-as-hard-as-their-nature-allows">Three documents, checked as hard as their nature allows</h2>
 <ul>
 <li><strong><a href="the-map.html">The map</a>.</strong> The actual shape of your system,
-<em>derived</em> from the compiled application. Never hand-edited,
-regenerated on demand, so it cannot lie.</li>
+<em>derived</em> from the compiled application. Regenerated on demand so it
+cannot lie.</li>
 <li><strong><a href="intent-cards.html">Intent cards</a>.</strong> One small authored file per
 context holding only what cannot be derived: purpose, invariants,
-decisions with their rejected alternatives. Hash-bound to the code's
-public surface; drift fails the build.</li>
+decisions with their rejected alternatives. Each card is hash-bound
+to the code's public surface, so drift fails the build.</li>
 <li><strong><a href="design-docs.html">Design docs</a>.</strong> One authored file per design.
 Drafts are work in flight; accepted designs are immutable, dated
 history whose promises were mechanically verified.</li>
@@ -67,8 +67,8 @@ Unbound prose is future lies.</p>
 $ mix cohere                 # where does this project stand?
 </code></pre>
 <h2 id="the-loop">The loop</h2>
-<p>Three verbs; everything else is plumbing their output points at.
-<a href="loop.html">Walk it end to end.</a></p>
+<p>Three verbs run the loop. The other tasks are plumbing, and check
+points to them when they're needed. <a href="loop.html">Walk it end to end.</a></p>
 <pre><code class="lang-console">$ mix cohere.design deal-reversals --contexts deals    # START
     ... design in the doc, against its ground ...
 $ mix cohere.check                     # CHECK: anytime; fix, repeat

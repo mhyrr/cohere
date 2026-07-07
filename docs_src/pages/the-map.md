@@ -7,9 +7,9 @@ description: The actual shape of the system, derived from the compiled applicati
 The map is the derived half of the coherence layer: contexts and their
 public API, Ecto schemas with real types and associations, Phoenix
 routes with LiveView unwrapped, Oban workers with queue and cron
-wiring. It is never hand-edited and regenerates on demand, which is the
-whole trick: **a document produced by reflection cannot drift from
-the code it reflects.**
+wiring. It regenerates on demand, which is the whole trick:
+**a document produced by reflection cannot drift from the code it
+reflects.**
 
 ## Derivation is functional, not textual
 
@@ -62,5 +62,5 @@ Every context heading carries a hash of its public function surface;
 that is the `[surface:df8be63a83b8]` above. Those hashes are what
 [intent cards](intent-cards.html) bind to: when a context's surface
 moves, every card bound to the old surface is flagged until a human
-re-reviews it. The map states what is; the hash makes "what is" a
-thing other documents can be held to.
+re-reviews it. The map states what is. The hash turns that statement
+into something other documents can be held to.

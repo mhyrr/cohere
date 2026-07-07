@@ -28,9 +28,9 @@
 <p>The map is the derived half of the coherence layer: contexts and their
 public API, Ecto schemas with real types and associations, Phoenix
 routes with LiveView unwrapped, Oban workers with queue and cron
-wiring. It is never hand-edited and regenerates on demand, which is the
-whole trick: <strong>a document produced by reflection cannot drift from
-the code it reflects.</strong></p>
+wiring. It regenerates on demand, which is the whole trick:
+<strong>a document produced by reflection cannot drift from the code it
+reflects.</strong></p>
 <h2 id="derivation-is-functional-not-textual">Derivation is functional, not textual</h2>
 <p>Classification reads the <em>compiled</em> application, never source text:
 <code>__schema__/1</code> makes a schema, <code>__adapter__/0</code> makes a repo,
@@ -74,8 +74,8 @@ running server, never the database. The map derives anywhere
 that is the <code>[surface:df8be63a83b8]</code> above. Those hashes are what
 <a href="intent-cards.html">intent cards</a> bind to: when a context's surface
 moves, every card bound to the old surface is flagged until a human
-re-reviews it. The map states what is; the hash makes "what is" a
-thing other documents can be held to.</p>
+re-reviews it. The map states what is. The hash turns that statement
+into something other documents can be held to.</p>
 </main>
 <footer>
   <p>cohere 0.1.0 · derived where possible, authored where necessary</p>

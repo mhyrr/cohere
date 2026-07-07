@@ -1,7 +1,7 @@
 # Intent cards
 
-The map states what the system *is*; it cannot state what the system
-is *for*. Intent cards carry the half that can't be derived: purpose,
+The map states what the system is. What the system is *for* can't be
+derived from code, and that's what intent cards carry: purpose,
 invariants, decisions with their rejected alternatives, non-goals.
 One small file per context, in `cohere/intent/`.
 
@@ -32,7 +32,7 @@ carry the *rejected alternatives*, the half of institutional memory
 that otherwise dies in chat scrollback. The next actor learns what was
 chosen and what was tried.
 
-## Hash-bound, not hoped
+## The binding
 
 The frontmatter is machine-managed: cohere stamps the card with the
 context's current surface hash *and* its full function list. When the
@@ -52,8 +52,8 @@ git state.
 Accepting is a review action, not a bypass. `mix cohere.check --accept
 deals` rebinds the card to the new surface and appends a dated line to
 the card's *Accepted drift* section; silent rebinding is not a
-supported path. The gate's contract is honest history: **the build
-fails until a human has looked, and the looking leaves a trace.**
+supported path. **The build fails until a human has looked, and the
+look leaves a dated trace.**
 
 ## What cards are not
 

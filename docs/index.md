@@ -27,12 +27,12 @@ to produce them.
 ## Three documents, checked as hard as their nature allows
 
 - **[The map](the-map.html).** The actual shape of your system,
-  *derived* from the compiled application. Never hand-edited,
-  regenerated on demand, so it cannot lie.
+  *derived* from the compiled application. Regenerated on demand so it
+  cannot lie.
 - **[Intent cards](intent-cards.html).** One small authored file per
   context holding only what cannot be derived: purpose, invariants,
-  decisions with their rejected alternatives. Hash-bound to the code's
-  public surface; drift fails the build.
+  decisions with their rejected alternatives. Each card is hash-bound
+  to the code's public surface, so drift fails the build.
 - **[Design docs](design-docs.html).** One authored file per design.
   Drafts are work in flight; accepted designs are immutable, dated
   history whose promises were mechanically verified.
@@ -54,8 +54,8 @@ $ mix cohere                 # where does this project stand?
 
 ## The loop
 
-Three verbs; everything else is plumbing their output points at.
-[Walk it end to end.](loop.html)
+Three verbs run the loop. The other tasks are plumbing, and check
+points to them when they're needed. [Walk it end to end.](loop.html)
 
 ```console
 $ mix cohere.design deal-reversals --contexts deals    # START

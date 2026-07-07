@@ -17,8 +17,6 @@ superseded`, `date`, `contexts`, optionally `supersedes`) plus
 sections: Problem, Existing ground, Shape, Promised surface,
 Decisions, Open questions, Status log.
 
-Two sections do the heavy lifting:
-
 ### Existing ground
 
 Assembled by `mix cohere.design` when the doc is born: each anchored
@@ -51,8 +49,6 @@ and the design cannot land without it.
 Design findings never fail the build; only the map and cards can
 exit 1. A design that has drifted from today's code is *history doing
 its job*: drift on intent is a bug, drift on history is information.
-The gate lives where the living documents live; the record stays a
-record.
 
 Completing a design forces the anchored cards through re-review, and
 that is the moment the design's durable decisions get distilled into

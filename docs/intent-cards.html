@@ -25,8 +25,8 @@
 
 <h1 class="page-title">Intent cards</h1>
 
-<p>The map states what the system <em>is</em>; it cannot state what the system
-is <em>for</em>. Intent cards carry the half that can't be derived: purpose,
+<p>The map states what the system is. What the system is <em>for</em> can't be
+derived from code, and that's what intent cards carry: purpose,
 invariants, decisions with their rejected alternatives, non-goals.
 One small file per context, in <code>cohere/intent/</code>.</p>
 <pre><code class="lang-markdown">---
@@ -53,7 +53,7 @@ One sentence a new engineer reads first.
 carry the <em>rejected alternatives</em>, the half of institutional memory
 that otherwise dies in chat scrollback. The next actor learns what was
 chosen and what was tried.</p>
-<h2 id="hash-bound-not-hoped">Hash-bound, not hoped</h2>
+<h2 id="the-binding">The binding</h2>
 <p>The frontmatter is machine-managed: cohere stamps the card with the
 context's current surface hash <em>and</em> its full function list. When the
 code's public surface moves, the card is <strong>drifted</strong> and
@@ -68,8 +68,8 @@ git state.</p>
 <p>Accepting is a review action, not a bypass. <code>mix cohere.check --accept
 deals</code> rebinds the card to the new surface and appends a dated line to
 the card's <em>Accepted drift</em> section; silent rebinding is not a
-supported path. The gate's contract is honest history: <strong>the build
-fails until a human has looked, and the looking leaves a trace.</strong></p>
+supported path. <strong>The build fails until a human has looked, and the
+look leaves a dated trace.</strong></p>
 <h2 id="what-cards-are-not">What cards are not</h2>
 <p>Cards are not documentation of the API; the map already carries the
 API, and restating it would create a second truth to keep honest.

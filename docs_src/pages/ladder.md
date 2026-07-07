@@ -11,7 +11,7 @@ where yours stands.
 <ul class="rungs">
 <li><span class="lvl">L0</span><span class="what">Context by discovery</span><span class="how">raw repo; agents grep and hope</span></li>
 <li><span class="lvl">L1</span><span class="what">Static guidance</span><span class="how">AGENTS.md, usage_rules; authored, unchecked</span></li>
-<li><span class="lvl">L2</span><span class="what">Derived truth</span><span class="how">the map: mix cohere.map</span></li>
+<li><span class="lvl">L2</span><span class="what">Derived truth</span><span class="how">a system map reflected from compiled code: mix cohere.map</span></li>
 <li><span class="lvl">L3</span><span class="what">Authored intent, checked</span><span class="how">intent cards + the drift gate</span></li>
 <li><span class="lvl">L4</span><span class="what">Governed verbs, verified behavior</span><span class="how">boundary enforcement, Tidewave runtime introspection</span></li>
 <li><span class="lvl">L5</span><span class="what">Delivered context</span><span class="how">work packets: mix cohere.packet</span></li>
@@ -25,9 +25,9 @@ matter, and let the rest arrive when it earns its place.
 ## Probing, never requiring
 
 Cohere has zero runtime dependencies, so every capability is *probed*
-in the host app rather than required of it. More installed, more
-derived; nothing installed beyond Elixir is still a working, if
-sparse, map.
+in the host app rather than required of it. The more you have
+installed, the more cohere derives; with nothing beyond Elixir you
+still get a working, if sparse, map.
 
 - **Ecto present.** Objects and links appear in the map: real field
   types, enum vocabularies, associations with their actual foreign keys.

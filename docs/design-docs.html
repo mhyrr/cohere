@@ -35,7 +35,6 @@ lifecycle the tooling enforces.</p>
 superseded</code>, <code>date</code>, <code>contexts</code>, optionally <code>supersedes</code>) plus
 sections: Problem, Existing ground, Shape, Promised surface,
 Decisions, Open questions, Status log.</p>
-<p>Two sections do the heavy lifting:</p>
 <h3 id="existing-ground">Existing ground</h3>
 <p>Assembled by <code>mix cohere.design</code> when the doc is born: each anchored
 context's current API from the map, plus the invariants and decisions
@@ -62,9 +61,7 @@ its <code>supersedes:</code> frontmatter. History is superseded, never edited.</
 <h2 id="advisory-by-construction">Advisory by construction</h2>
 <p>Design findings never fail the build; only the map and cards can
 exit 1. A design that has drifted from today's code is <em>history doing
-its job</em>: drift on intent is a bug, drift on history is information.
-The gate lives where the living documents live; the record stays a
-record.</p>
+its job</em>: drift on intent is a bug, drift on history is information.</p>
 <p>Completing a design forces the anchored cards through re-review, and
 that is the moment the design's durable decisions get distilled into
 <a href="intent-cards.html">intent cards</a>. Cards cite designs by slug, so the

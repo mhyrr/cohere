@@ -19,16 +19,15 @@ map, plus the invariants and decisions from its intent card, dated.
 
 A no-LLM tool can't judge that your design contradicts INV-DEA-002.
 It does something better suited to a deterministic tool: it delivers
-INV-DEA-002 onto the page where you're designing, so the contradiction
-gets *seen*. The tool assembles; the mind judges.
+INV-DEA-002 onto the page where you're designing, where a
+contradiction is hard to miss.
 
 ## Check
 
-One command, no modes, every finding printed with the action that
-fixes it. Hard findings exit 1: a stale map, a drifted card, a dead
-card reference. Design findings are advisories and never fail the
-build; an accepted design is a dated record, and drift on history is
-information, not a bug.
+Every finding comes with the action that fixes it. Hard findings exit
+1: a stale map, a drifted card, a dead card reference. Design findings
+are advisories and never fail the build; an accepted design is a dated
+record, and drift on history is information, not a bug.
 
 <pre><code>$ mix cohere.check
 <span class="hazard">✗ cohere/intent/deals.md
