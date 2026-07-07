@@ -30,6 +30,12 @@ Design docs: the authored artifact of the feature loop.
 **API** (12): accept/2 filename/1 ground/2 issues/3 load_all/1 open_questions/1 parse/1 parse/2 promised_refs/1 skeleton/2 skeleton/3 unmet_promises/1
 **Support:** Doc
 
+### Cohere.Docs — service `[surface:1e30bfb36209]`
+
+Renders the cohere docs site: authored markdown in `docs_src/` becomes static HTML in `docs/`, alongside pages derived from the compiled tasks and the repo's own coherence artifac…
+
+**API** (3): build/0 build/1 render_markdown/1
+
 ### Cohere.Drift — service `[surface:33bec9f41f56]`
 
 The drift sentinel: mechanically detects when the project has moved out from under its coherence artifacts.
