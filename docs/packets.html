@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Packets · cohere</title>
-<meta name="description" content="Context delivered, not discovered — the coherence layer assembled for one task.">
+<meta name="description" content="Context delivered, not discovered. The coherence layer assembled for one task.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Fragment+Mono:ital@0;1&display=swap" rel="stylesheet">
@@ -38,29 +38,27 @@ $ mix cohere.packet --diff               # ...or for exactly the
 routes, workers), its intent card (the invariants the work must not
 violate, the decisions already made, with what was rejected), and
 pointers to the source files that own it. With <code>--diff</code>, cohere reads
-the branch's changed files and works out the touched contexts itself
-— the packet for the work actually in flight.</p>
+the branch's changed files and works out the touched contexts itself:
+the packet for the work actually in flight.</p>
 <h2 id="link-don-t-restate">Link, don't restate</h2>
 <p>A packet carries source records and pointers; it never paraphrases
 code into a second truth. The map slice is the derived record; the
 card is the authored record; everything else is a path. Paraphrase is
-how context layers rot — the packet format refuses it structurally.</p>
+how context layers rot; the packet format refuses it structurally.</p>
 <h2 id="runtime-verification-when-it-s-there">Runtime verification, when it's there</h2>
 <p>Cohere probes the host app rather than requiring anything of it. When
 Tidewave is present, the packet's verification section directs the
-agent to confirm behavior against the <em>running</em> application —
-<code>project_eval</code> for code paths, <code>execute_sql_query</code> for data shape —
-instead of inferring it from source. When it isn't, the packet says
+agent to confirm behavior against the <em>running</em> application instead
+of inferring it from source: <code>project_eval</code> for code paths,
+<code>execute_sql_query</code> for data shape. When it isn't, the packet says
 so, and verification falls back to the test suite.</p>
-<h2 id="why-this-is-the-payoff">Why this is the payoff</h2>
-<p>The ladder's lower levels each strengthen a guarantee; packets are
-where the guarantees compound. Because the map
+<h2 id="where-the-guarantees-compound">Where the guarantees compound</h2>
+<p>The ladder's lower levels each strengthen a guarantee. Because the map
 <a href="the-map.html">cannot lie</a>, the API in the packet is current. Because
 cards are <a href="intent-cards.html">hash-bound</a>, the invariants in the
 packet were re-reviewed the last time the surface moved. Because
 <a href="design-docs.html">designs</a> are dated records, the packet's history is
-honest. Delivered context is only as good as the coherence behind it —
-which is the point of having the rest.</p>
+honest. Delivered context is only as good as the coherence behind it.</p>
 </main>
 <footer>
   <p>cohere 0.1.0 · derived where possible, authored where necessary</p>

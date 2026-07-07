@@ -10,8 +10,7 @@
 <text x="242" y="128" font-family="Fragment Mono, monospace" font-size="9" fill="#8a6b4d" stroke="none" opacity="0.8">12</text>
 <text x="58" y="72" font-family="Fragment Mono, monospace" font-size="9" fill="#8a6b4d" stroke="none" opacity="0.8">23</text>
 </svg>
-<p class="hero-thesis">A project is coherent to the degree that it can furnish any actor — human or model — with the minimal context sufficient to act in line with intent, and can mechanically detect when it has drifted.</p>
-<p class="hero-attribution">the working definition · everything below is machinery for it</p>
+<p class="hero-thesis">A project is coherent to the degree that it can furnish any actor, human or model, with the minimal context sufficient to act in line with intent, and can mechanically detect when it has drifted.</p>
 </div>
 
 Models are intelligent but context-starved, and the failure mode of
@@ -22,19 +21,19 @@ changes accumulate with no shared frame. Cohere makes coherence a
 of the agent.
 
 No LLM calls. Zero runtime dependencies. Everything is deterministic
-and CI-runnable — models *consume* the outputs but are never required
+and CI-runnable; models *consume* the outputs but are never required
 to produce them.
 
 ## Three documents, checked as hard as their nature allows
 
-- **[The map](the-map.html)** — the actual shape of your system,
+- **[The map](the-map.html).** The actual shape of your system,
   *derived* from the compiled application. Never hand-edited,
-  regenerated on demand — therefore it cannot lie.
-- **[Intent cards](intent-cards.html)** — one small authored file per
+  regenerated on demand, so it cannot lie.
+- **[Intent cards](intent-cards.html).** One small authored file per
   context holding only what cannot be derived: purpose, invariants,
   decisions with their rejected alternatives. Hash-bound to the code's
   public surface; drift fails the build.
-- **[Design docs](design-docs.html)** — one authored file per design.
+- **[Design docs](design-docs.html).** One authored file per design.
   Drafts are work in flight; accepted designs are immutable, dated
   history whose promises were mechanically verified.
 
@@ -44,7 +43,7 @@ Unbound prose is future lies.
 ## Quickstart
 
 ```elixir
-# mix.exs — dev/test only; consumers inherit nothing
+# mix.exs: dev/test only; consumers inherit nothing
 {:cohere, "~> 0.1", only: [:dev, :test]}
 ```
 
@@ -61,19 +60,19 @@ Three verbs; everything else is plumbing their output points at.
 ```console
 $ mix cohere.design deal-reversals --contexts deals    # START
     ... design in the doc, against its ground ...
-$ mix cohere.check                     # CHECK — anytime; fix, repeat
+$ mix cohere.check                     # CHECK: anytime; fix, repeat
     ... build ...
-$ mix cohere.complete deal-reversals   # COMPLETE — when check is quiet
+$ mix cohere.complete deal-reversals   # COMPLETE: when check is quiet
 ```
 
-`mix cohere.check` runs identically in CI and exits 1 on hard drift —
+`mix cohere.check` runs identically in CI and exits 1 on hard drift:
 a stale map, a drifted card, a dead reference. The failure mode this
 tool exists to kill is the *silent* kind.
 
 ## Reading on
 
 The [coherence ladder](ladder.html) places all of this on five
-incremental levels — each useful alone. [Work packets](packets.html)
+incremental levels, each useful alone. [Work packets](packets.html)
 are the payoff: context delivered to an agent, not discovered by one.
 And [cohere on cohere](self.html) shows the tool run on this very
 repository, live.

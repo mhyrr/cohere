@@ -4,7 +4,7 @@ The map is the derived half of the coherence layer: contexts and their
 public API, Ecto schemas with real types and associations, Phoenix
 routes with LiveView unwrapped, Oban workers with queue and cron
 wiring. It is never hand-edited and regenerates on demand, which is the
-whole trick — **a document produced by reflection cannot drift from
+whole trick: **a document produced by reflection cannot drift from
 the code it reflects.**
 
 ## Derivation is functional, not textual
@@ -12,8 +12,8 @@ the code it reflects.**
 Classification reads the *compiled* application, never source text:
 `__schema__/1` makes a schema, `__adapter__/0` makes a repo,
 `__routes__/0` makes a router, the `Oban.Worker` behaviour makes a
-worker. Names lie — a module named `Deals` could be anything — but
-compiled modules don't.
+worker. Names lie; a module named `Deals` could be anything. Compiled
+modules don't.
 
 That discipline was earned against a real ~185-module Phoenix app: an
 encrypted Cloak type living in the schema layer (caught as an Ecto
@@ -36,8 +36,8 @@ what the code *is*, not what its names suggest.
 ```
 
 Entries read like the language of the business because they *are* the
-business, reflected out of the compiled code: enum vocabularies, custom
-foreign keys, queue wiring — the facts agents otherwise rediscover by
+business, reflected out of the compiled code. Enum vocabularies, custom
+foreign keys, queue wiring: the facts agents otherwise rediscover by
 grepping, in one git-tracked file whose PR diff is the ontology change.
 
 ## The rules it lives by
@@ -46,16 +46,16 @@ grepping, in one git-tracked file whose PR diff is the ontology change.
   design. Anything a human needs to say belongs in an
   [intent card](intent-cards.html), not the map.
 - **Deterministic.** Stable ordering, no timestamps. Regenerating
-  without a code change is a no-op diff — so staleness is simple byte
-  inequality, and the CI gate can prove freshness.
+  without a code change is a no-op diff, so staleness is simple byte
+  inequality and the CI gate can prove freshness.
 - **Compiled modules and app config only.** Never source text, never a
   running server, never the database. The map derives anywhere
   `mix compile` runs, including CI.
 
 ## Surface hashes
 
-Every context heading carries a hash of its public function surface —
-`[surface:df8be63a83b8]` above. Those hashes are what
+Every context heading carries a hash of its public function surface;
+that is the `[surface:df8be63a83b8]` above. Those hashes are what
 [intent cards](intent-cards.html) bind to: when a context's surface
 moves, every card bound to the old surface is flagged until a human
 re-reviews it. The map states what is; the hash makes "what is" a

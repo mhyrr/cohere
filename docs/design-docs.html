@@ -26,13 +26,13 @@
 <h1 class="page-title">Design docs</h1>
 
 <p>Every non-trivial change starts with a design conversation. Without a
-home, it lands in a wiki, a gist, a chat scrollback — a hairy pile of
+home, it lands in a wiki, a gist, a chat scrollback: a hairy pile of
 documents no tool reads and no gate keeps honest. Design docs give
 that conversation one format, one directory (<code>cohere/design/</code>), and a
 lifecycle the tooling enforces.</p>
 <h2 id="anatomy">Anatomy</h2>
-<p>A design doc is frontmatter — <code>design</code>, <code>status: draft | accepted |
-superseded</code>, <code>date</code>, <code>contexts</code>, optionally <code>supersedes</code> — plus
+<p>A design doc is frontmatter (<code>design</code>, <code>status: draft | accepted |
+superseded</code>, <code>date</code>, <code>contexts</code>, optionally <code>supersedes</code>) plus
 sections: Problem, Existing ground, Shape, Promised surface,
 Decisions, Open questions, Status log.</p>
 <p>Two sections do the heavy lifting:</p>
@@ -40,7 +40,7 @@ Decisions, Open questions, Status log.</p>
 <p>Assembled by <code>mix cohere.design</code> when the doc is born: each anchored
 context's current API from the map, plus the invariants and decisions
 from its intent card, inlined as a <strong>dated snapshot</strong>. Constraints
-nobody opens don't constrain anything — so the constraints are
+nobody opens don't constrain anything, so the constraints are
 delivered onto the page where the designing happens. A design is a
 dated record; quoting the ground as-of its date is a quote in a
 meeting record, not a second truth.</p>
@@ -52,24 +52,23 @@ ref resolves in the compiled app. Promise <code>MyApp.Deals.reverse_deal/1</code
 and the design cannot land without it.</p>
 <h2 id="lifecycle">Lifecycle</h2>
 <ul>
-<li><strong>Draft</strong> — work in flight. The draft <em>is</em> the in-flight state;
+<li><strong>Draft.</strong> Work in flight. The draft <em>is</em> the in-flight state;
 there is no dotfile, no registry. Check reads status fresh from disk.</li>
-<li><strong>Accepted</strong> — <code>mix cohere.complete</code> verified the promises, flipped
+<li><strong>Accepted.</strong> <code>mix cohere.complete</code> verified the promises, flipped
 the status, dated the log. Accepted designs are immutable history.</li>
-<li><strong>Superseded</strong> — new thinking is a <em>new</em> doc naming the old slug in
+<li><strong>Superseded.</strong> New thinking is a <em>new</em> doc naming the old slug in
 its <code>supersedes:</code> frontmatter. History is superseded, never edited.</li>
 </ul>
 <h2 id="advisory-by-construction">Advisory by construction</h2>
-<p>Design findings never fail the build — only the map and cards can
+<p>Design findings never fail the build; only the map and cards can
 exit 1. A design that has drifted from today's code is <em>history doing
 its job</em>: drift on intent is a bug, drift on history is information.
 The gate lives where the living documents live; the record stays a
 record.</p>
-<p>One direction of flow ties it together: completing a design forces the
-anchored cards through re-review, which is the moment the design's
-durable decisions get distilled into <a href="intent-cards.html">intent cards</a>
-— and cards cite designs by slug. Conversation becomes constraint;
-the trail stays walkable.</p>
+<p>Completing a design forces the anchored cards through re-review, and
+that is the moment the design's durable decisions get distilled into
+<a href="intent-cards.html">intent cards</a>. Cards cite designs by slug, so the
+trail stays walkable in both directions.</p>
 </main>
 <footer>
   <p>cohere 0.1.0 · derived where possible, authored where necessary</p>

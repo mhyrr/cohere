@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The map · cohere</title>
-<meta name="description" content="The actual shape of the system, derived from the compiled application — therefore it cannot lie.">
+<meta name="description" content="The actual shape of the system, derived from the compiled application, so it cannot lie.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Fragment+Mono:ital@0;1&display=swap" rel="stylesheet">
@@ -29,14 +29,14 @@
 public API, Ecto schemas with real types and associations, Phoenix
 routes with LiveView unwrapped, Oban workers with queue and cron
 wiring. It is never hand-edited and regenerates on demand, which is the
-whole trick — <strong>a document produced by reflection cannot drift from
+whole trick: <strong>a document produced by reflection cannot drift from
 the code it reflects.</strong></p>
 <h2 id="derivation-is-functional-not-textual">Derivation is functional, not textual</h2>
 <p>Classification reads the <em>compiled</em> application, never source text:
 <code>__schema__/1</code> makes a schema, <code>__adapter__/0</code> makes a repo,
 <code>__routes__/0</code> makes a router, the <code>Oban.Worker</code> behaviour makes a
-worker. Names lie — a module named <code>Deals</code> could be anything — but
-compiled modules don't.</p>
+worker. Names lie; a module named <code>Deals</code> could be anything. Compiled
+modules don't.</p>
 <p>That discipline was earned against a real ~185-module Phoenix app: an
 encrypted Cloak type living in the schema layer (caught as an Ecto
 type, not a schema), contexts with zero CRUD-named functions,
@@ -54,8 +54,8 @@ what the code <em>is</em>, not what its names suggest.</p>
 - belongs_to reviewed_by → Revrec.Users.User via reviewed_by_user_id
 </code></pre>
 <p>Entries read like the language of the business because they <em>are</em> the
-business, reflected out of the compiled code: enum vocabularies, custom
-foreign keys, queue wiring — the facts agents otherwise rediscover by
+business, reflected out of the compiled code. Enum vocabularies, custom
+foreign keys, queue wiring: the facts agents otherwise rediscover by
 grepping, in one git-tracked file whose PR diff is the ontology change.</p>
 <h2 id="the-rules-it-lives-by">The rules it lives by</h2>
 <ul>
@@ -63,15 +63,15 @@ grepping, in one git-tracked file whose PR diff is the ontology change.</p>
 design. Anything a human needs to say belongs in an
 <a href="intent-cards.html">intent card</a>, not the map.</li>
 <li><strong>Deterministic.</strong> Stable ordering, no timestamps. Regenerating
-without a code change is a no-op diff — so staleness is simple byte
-inequality, and the CI gate can prove freshness.</li>
+without a code change is a no-op diff, so staleness is simple byte
+inequality and the CI gate can prove freshness.</li>
 <li><strong>Compiled modules and app config only.</strong> Never source text, never a
 running server, never the database. The map derives anywhere
 <code>mix compile</code> runs, including CI.</li>
 </ul>
 <h2 id="surface-hashes">Surface hashes</h2>
-<p>Every context heading carries a hash of its public function surface —
-<code>[surface:df8be63a83b8]</code> above. Those hashes are what
+<p>Every context heading carries a hash of its public function surface;
+that is the <code>[surface:df8be63a83b8]</code> above. Those hashes are what
 <a href="intent-cards.html">intent cards</a> bind to: when a context's surface
 moves, every card bound to the old surface is flagged until a human
 re-reviews it. The map states what is; the hash makes "what is" a

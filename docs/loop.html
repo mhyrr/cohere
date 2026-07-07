@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The loop · cohere</title>
-<meta name="description" content="Design, check, complete — the feature loop, walked end to end.">
+<meta name="description" content="Design, check, complete. The feature loop, walked end to end.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Fragment+Mono:ital@0;1&display=swap" rel="stylesheet">
@@ -29,14 +29,14 @@
 iterative command you run until it comes back quiet, identical locally
 and in CI.</p>
 <pre><code class="lang-console">$ mix cohere.design deal-reversals --contexts deals   # START
-$ mix cohere.check                                    # CHECK — anytime
+$ mix cohere.check                                    # CHECK: anytime
 $ mix cohere.complete deal-reversals                  # COMPLETE
 </code></pre>
 <h2 id="start">Start</h2>
 <p><code>mix cohere.design deal-reversals --contexts deals</code> scaffolds
 <code>cohere/design/deal-reversals.md</code> with <code>status: draft</code> and assembles
 its <strong>Existing ground</strong>: each anchored context's current API from the
-map, plus the invariants and decisions from its intent card — dated.</p>
+map, plus the invariants and decisions from its intent card, dated.</p>
 <p>A no-LLM tool can't judge that your design contradicts INV-DEA-002.
 It does something better suited to a deterministic tool: it delivers
 INV-DEA-002 onto the page where you're designing, so the contradiction
@@ -45,7 +45,7 @@ gets <em>seen</em>. The tool assembles; the mind judges.</p>
 <p>One command, no modes, every finding printed with the action that
 fixes it. Hard findings exit 1: a stale map, a drifted card, a dead
 card reference. Design findings are advisories and never fail the
-build — an accepted design is a dated record, and drift on history is
+build; an accepted design is a dated record, and drift on history is
 information, not a bug.</p>
 <pre><code>$ mix cohere.check
 <span class="hazard">✗ cohere/intent/deals.md
@@ -56,16 +56,16 @@ information, not a bug.</p>
 <span class="hazard">drift detected</span></code></pre>
 <p>A drifted card means: re-read it against the new surface, update what
 your change invalidated, then accept. Accepting always leaves a dated
-trace in the card — <strong>accepted drift is documented drift</strong>. The failure
-mode this loop exists to kill is the silent kind.</p>
+trace in the card. <strong>Accepted drift is documented drift</strong>, and the
+failure mode this loop exists to kill is the silent kind.</p>
 <pre><code class="lang-console">$ mix cohere.check --accept deals
 cohere/intent/deals.md — rebound to surface df8be63a83b8, drift annotated
 </code></pre>
 <h2 id="complete">Complete</h2>
 <p><code>mix cohere.complete deal-reversals</code> is the land step, one command:</p>
 <ol>
-<li>Regenerate the map — mechanical, so just done.</li>
-<li>Require the check hard-clean — which forces the card re-review
+<li>Regenerate the map. Mechanical, so it just runs.</li>
+<li>Require the check hard-clean, which forces the card re-review
 where the design's durable decisions get distilled into cards.</li>
 <li>Verify every backticked ref in the design's <strong>Promised surface</strong>
 exists in the compiled app. A design that promised <code>reverse_deal/1</code>
@@ -74,10 +74,10 @@ cannot complete until <code>reverse_deal/1</code> exists.</li>
 </ol>
 <p>The PR that lands the feature carries the map delta (the ontology
 change), the card delta (the intent change), the accepted design (the
-why), and the code — reviewable together.</p>
+why), and the code, all reviewable together.</p>
 <h2 id="after-acceptance">After acceptance</h2>
 <p>Accepted designs are immutable. New thinking later is a <em>new</em> design
-naming the old one in its <code>supersedes:</code> frontmatter — history is
+naming the old one in its <code>supersedes:</code> frontmatter; history is
 superseded, never rewritten. Cards are the living constraints; designs
 are the conversation record. Two living truths about the same intent
 always diverge, so cohere keeps exactly one.</p>

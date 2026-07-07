@@ -3,7 +3,7 @@
 <div class="stamp">derived · task moduledocs, via reflection · cohere 0.1.0</div>
 
 Every entry below is read from the compiled task's own `@shortdoc`
-and `@moduledoc` — the reference cannot drift from the tool, because
+and `@moduledoc`. The reference cannot drift from the tool, because
 it is the tool describing itself.
 
 ## mix cohere

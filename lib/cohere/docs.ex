@@ -251,7 +251,7 @@ defmodule Cohere.Docs do
     #{stamp("task moduledocs, via reflection")}
 
     Every entry below is read from the compiled task's own `@shortdoc`
-    and `@moduledoc` — the reference cannot drift from the tool, because
+    and `@moduledoc`. The reference cannot drift from the tool, because
     it is the tool describing itself.
 
     #{entries}
@@ -290,10 +290,10 @@ defmodule Cohere.Docs do
 
     body = """
     Cohere runs on itself. Everything on this page is lifted from this
-    repository's own `cohere/` directory — the same artifacts the CI gate
+    repository's own `cohere/` directory, the same artifacts the CI gate
     checks on every push.
 
-    #{stamp("cohere/map.md — the committed map of this repo")}
+    #{stamp("cohere/map.md · this repo's committed map")}
 
     <section class="derived-doc">
 

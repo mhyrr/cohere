@@ -30,7 +30,7 @@ names what a project actually has, level by level. <code>mix cohere</code> print
 where yours stands.</p>
 <ul class="rungs">
 <li><span class="lvl">L0</span><span class="what">Context by discovery</span><span class="how">raw repo; agents grep and hope</span></li>
-<li><span class="lvl">L1</span><span class="what">Static guidance</span><span class="how">AGENTS.md, usage_rules — authored, unchecked</span></li>
+<li><span class="lvl">L1</span><span class="what">Static guidance</span><span class="how">AGENTS.md, usage_rules; authored, unchecked</span></li>
 <li><span class="lvl">L2</span><span class="what">Derived truth</span><span class="how">the map: mix cohere.map</span></li>
 <li><span class="lvl">L3</span><span class="what">Authored intent, checked</span><span class="how">intent cards + the drift gate</span></li>
 <li><span class="lvl">L4</span><span class="what">Governed verbs, verified behavior</span><span class="how">boundary enforcement, Tidewave runtime introspection</span></li>
@@ -38,23 +38,23 @@ where yours stands.</p>
 </ul>
 <p>Each level is useful alone; none requires the previous. Phoenix 1.8
 ships every new project at level 1. Cohere is levels 2–5, adopted
-incrementally — start with the map, add cards to the contexts that
+incrementally: start with the map, add cards to the contexts that
 matter, and let the rest arrive when it earns its place.</p>
 <h2 id="probing-never-requiring">Probing, never requiring</h2>
 <p>Cohere has zero runtime dependencies, so every capability is <em>probed</em>
 in the host app rather than required of it. More installed, more
-derived; nothing installed beyond Elixir is still a working — if
-sparse — map.</p>
+derived; nothing installed beyond Elixir is still a working, if
+sparse, map.</p>
 <ul>
-<li><strong>Ecto present</strong> — objects and links appear in the map: real field
+<li><strong>Ecto present.</strong> Objects and links appear in the map: real field
 types, enum vocabularies, associations with their actual foreign keys.</li>
-<li><strong>Phoenix present</strong> — the route surface appears, LiveView unwrapped
+<li><strong>Phoenix present.</strong> The route surface appears, LiveView unwrapped
 to its module and action.</li>
-<li><strong>Oban present</strong> — the job surface appears: queues, uniqueness, and
+<li><strong>Oban present.</strong> The job surface appears: queues, uniqueness, and
 cron wiring read from config.</li>
-<li><strong>boundary present</strong> — level 4 lights up: write paths are
+<li><strong>boundary present.</strong> Level 4 lights up: write paths are
 compiler-governed, not convention-governed.</li>
-<li><strong>Tidewave present</strong> — work packets direct agents to verify behavior
+<li><strong>Tidewave present.</strong> Work packets direct agents to verify behavior
 in the running app (<code>project_eval</code>, <code>execute_sql_query</code>) instead of
 inferring it from source.</li>
 </ul>
@@ -63,7 +63,7 @@ inferring it from source.</li>
 L1 is prose someone wrote once; nothing checks it. L2 cannot lie but
 knows nothing of intent. L3 is where the gate appears: authored intent
 that the build <em>verifies</em> is still current. L4 moves enforcement into
-the compiler and verification into the runtime. L5 is the payoff —
+the compiler and verification into the runtime. L5 is the payoff:
 <a href="packets.html">context assembled and delivered</a> for exactly the task
 at hand.</p>
 </main>
