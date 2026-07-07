@@ -25,3 +25,7 @@ jobs:
       - run: mix compile --warnings-as-errors
       - run: mix test
       - run: mix cohere.check
+      # docs/ is a committed derived artifact, gated like the map:
+      # rebuild and fail on any byte difference
+      - run: mix run docs_src/build.exs
+      - run: git diff --exit-code docs/

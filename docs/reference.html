@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reference · cohere</title>
+<meta name="description" content="Every mix task, derived from its own moduledoc.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Fragment+Mono:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cg fill='none' stroke='%238a6b4d' stroke-width='1.6'%3E%3Cpath d='M16 3 C 24 2.5, 29.5 9, 29 16 C 28.5 24, 22 29.5, 15 29 C 8 28.5, 2.5 23, 3 15.5 C 3.5 8, 9 3.5, 16 3 Z'/%3E%3Cpath d='M16 8.5 C 21 8.2, 24.5 12, 24 16.5 C 23.5 21, 20 24, 15.5 23.5 C 11 23, 8 20, 8.5 15.5 C 9 11, 12 8.8, 16 8.5 Z'/%3E%3Ccircle cx='16' cy='16' r='2.2' fill='%2322303a' stroke='none'/%3E%3C/g%3E%3C/svg%3E">
+</head>
+<body class="page-derived">
+<a class="skip" href="#main">Skip to content</a>
+<header class="masthead">
+  <a class="brand" href="index.html">Cohere</a>
+  <p class="brand-sub">a coherence layer for Elixir / Phoenix</p>
+  <nav aria-label="Pages">
+    <a href="index.html">Overview</a><a href="ladder.html">The ladder</a><a href="loop.html">The loop</a><a href="the-map.html">The map</a><a href="intent-cards.html">Intent cards</a><a href="design-docs.html">Design docs</a><a href="packets.html">Packets</a><a href="reference.html" aria-current="page">Reference</a><a href="self.html">Cohere on cohere</a>
+  </nav>
+</header>
+<div class="graduation" aria-hidden="true"></div>
+<main id="main" class="sheet">
+
+<h1 class="page-title">Reference</h1>
+
+<div class="stamp">derived · task moduledocs, via reflection · cohere 0.1.0</div>
+<p>Every entry below is read from the compiled task's own <code>@shortdoc</code>
+and <code>@moduledoc</code> — the reference cannot drift from the tool, because
+it is the tool describing itself.</p>
+<h2 id="mix-cohere">mix cohere</h2>
+<p><em>Reports where the project stands on the coherence ladder</em></p>
+<p>Prints the project's current coherence level and what the next rung
+requires.</p>
+<pre><code>$ mix cohere
+</code></pre>
+<p>Levels: 1 static guidance, 2 derived map, 3 checked intent cards,
+4 governed verbs / runtime verification, 5 delivered context (packets).</p>
+<h2 id="mix-cohere-init">mix cohere.init</h2>
+<p><em>Sets up the coherence layer in this project</em></p>
+<p>Creates the <code>cohere/</code> directory (map, <code>intent/</code>, <code>design/</code>), derives the
+first map, and writes a README explaining the feature loop and a CI
+snippet for the check gate.</p>
+<pre><code>$ mix cohere.init
+</code></pre>
+<p>Deliberately does <em>not</em> generate an intent card per context — empty cards
+are noise. Start with the two or three contexts where intent actually
+accumulates (<code>mix cohere.gen.intent &lt;context&gt;</code>); add more when a context
+earns one.</p>
+<h2 id="mix-cohere-design">mix cohere.design</h2>
+<p><em>Starts a design: scaffolds a draft doc with its existing ground</em></p>
+<p>The start verb of the feature loop — and, with no arguments, the listing.</p>
+<pre><code>$ mix cohere.design                                    # list designs + statuses
+$ mix cohere.design deal-reversals --contexts deals,billing
+</code></pre>
+<p>Scaffolds <code>cohere/design/deal-reversals.md</code> (status: draft) and
+assembles its Existing ground: for each anchored context, the current
+API from the map plus the invariants and decisions from its intent
+card — the constraints the design should be shaped against, delivered
+onto the page where the designing happens.</p>
+<p>Anchoring a context that doesn't exist yet is fine — the design may be
+the thing that introduces it; <code>mix cohere.complete</code> verifies it landed.</p>
+<p>Iterate with <code>mix cohere.check</code>; land with <code>mix cohere.complete &lt;slug&gt;</code>.</p>
+<h2 id="mix-cohere-check">mix cohere.check</h2>
+<p><em>Checks coherence — map, cards, and designs in one pass</em></p>
+<p>The check verb of the feature loop: run it anytime, locally or in CI;
+fix what it lists and run it again.</p>
+<pre><code>$ mix cohere.check                  # exit 1 on hard drift (the CI gate)
+$ mix cohere.check --accept deals   # rebind the deals card after re-review
+</code></pre>
+<p>Hard findings fail the build: a stale map, an intent card whose context
+surface moved since review, a card referencing dead code. Design docs
+only ever produce advisories — an accepted design is a dated record, and
+drift on history is information, not a build failure.</p>
+<p>Accepting drift is a review action: re-read the card against the current
+map first. The annotation records that the surface change was seen and
+deemed consistent with the card's intent.</p>
+<h2 id="mix-cohere-complete">mix cohere.complete</h2>
+<p><em>Completes a design: verifies its promises landed, flips it to accepted</em></p>
+<p>The complete verb of the feature loop — the land step, one command.</p>
+<pre><code>$ mix cohere.complete deal-reversals
+</code></pre>
+<p>Regenerates the map (mechanical, so it just happens), then requires:</p>
+<p>  * the check hard-clean — drifted cards must be re-reviewed and</p>
+<pre><code>accepted first, which is exactly the moment the design's durable
+decisions get distilled into the cards it anchors
+</code></pre>
+<p>  * every ref in Promised surface resolving in the compiled app — a</p>
+<pre><code>design that promised `reverse_deal/1` cannot complete until
+`reverse_deal/1` exists
+</code></pre>
+<p>  * every anchored context present in the map</p>
+<p>Unresolved open questions warn but never block (DEC-FEA-007) —
+questions legitimately outlive features. On success the design flips
+<code>draft → accepted</code> with a dated Status log line. Accepted designs are
+immutable history: supersede them with a new design, never edit them.</p>
+<h2 id="mix-cohere-map">mix cohere.map</h2>
+<p><em>Regenerates the derived system map</em></p>
+<p>Derives the system map from the compiled application and writes it to
+<code>cohere/map.md</code> (configurable via <code>config :cohere, dir: ...</code>).</p>
+<pre><code>$ mix cohere.map
+</code></pre>
+<p>The map is deterministic: same code in, same bytes out. Commit it; the
+diff on a PR <em>is</em> the ontology change.</p>
+<h2 id="mix-cohere-gen-intent">mix cohere.gen.intent</h2>
+<p><em>Generates intent card skeletons for contexts</em></p>
+<p>Generates an intent card skeleton for each named context, bound to its
+current public surface (so a fresh card is born non-drifted).</p>
+<pre><code>$ mix cohere.gen.intent deals billing
+$ mix cohere.gen.intent --all        # every context-ful group
+$ mix cohere.gen.intent deals --force  # overwrite an existing card
+</code></pre>
+<p>Cards are the <em>authored</em> layer — the skeleton is scaffolding, not
+content. Fill in only what cannot be derived: purpose, invariants,
+decisions, non-goals. If a section has nothing durable to say, leave it
+empty rather than restating the code.</p>
+<h2 id="mix-cohere-packet">mix cohere.packet</h2>
+<p><em>Assembles a work packet for the contexts a task touches</em></p>
+<p>Prints a work packet — map slices, intent cards, related routes, and
+runtime-verification pointers — for the contexts a task touches.</p>
+<pre><code>$ mix cohere.packet deals billing        # contexts named explicitly
+$ mix cohere.packet --diff                # contexts touched by this branch
+$ mix cohere.packet --diff --base develop # …diffed against a given ref
+$ mix cohere.packet deals --out packet.md
+</code></pre>
+<p>With <code>--diff</code>, cohere maps the branch's changed files to the contexts that
+own them (reflection over compiled modules, not path guessing) and
+assembles the packet for exactly those — the dispatch integration point: a
+work loop calls it with no arguments and gets the right slice. <code>--base</code>
+sets the ref to diff against (default <code>main</code>).</p>
+<p>Feed the packet to whatever does the work: paste it into a session, wire
+it into a dispatch prompt, or hand it to a teammate. Context delivered,
+not discovered.</p>
+</main>
+<footer>
+  <p>cohere 0.1.0 · derived where possible, authored where necessary</p>
+  <p><a href="reference.md">this page as markdown</a> · <a href="llms.txt">llms.txt</a> · <a href="https://github.com/mhyrr/cohere">github</a> · MIT</p>
+</footer>
+</body>
+</html>

@@ -1,0 +1,13 @@
+# cohere
+
+> A coherence layer for Elixir/Phoenix projects.
+
+- [Overview](https://mhyrr.github.io/cohere/index.md): Coherence as a measurable property of the project, not a hoped-for behavior of the agent.
+- [The ladder](https://mhyrr.github.io/cohere/ladder.md): Five levels of coherence, each useful alone, adopted incrementally.
+- [The loop](https://mhyrr.github.io/cohere/loop.md): Design, check, complete — the feature loop, walked end to end.
+- [The map](https://mhyrr.github.io/cohere/the-map.md): The actual shape of the system, derived from the compiled application — therefore it cannot lie.
+- [Intent cards](https://mhyrr.github.io/cohere/intent-cards.md): The authored layer — purpose, invariants, decisions — hash-bound to the code so drift fails the build.
+- [Design docs](https://mhyrr.github.io/cohere/design-docs.md): The design conversation you'd have anyway, landing in one format the tooling reads.
+- [Packets](https://mhyrr.github.io/cohere/packets.md): Context delivered, not discovered — the coherence layer assembled for one task.
+- [Reference](https://mhyrr.github.io/cohere/reference.md): Every mix task, derived from its own moduledoc.
+- [Cohere on cohere](https://mhyrr.github.io/cohere/self.md): The repo's live map and an intent card, as shipped.

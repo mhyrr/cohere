@@ -1,0 +1,357 @@
+/* cohere docs — the survey chart.
+   Two papers carry the thesis: authored content sits on buff (land),
+   derived content on white (soundings). Chart magenta is reserved for
+   drift and hazard — nothing decorative may use it. */
+
+:root {
+  --ground: #e7ecec;        /* bathymetric wash — the water the sheet sits on */
+  --ground-line: #d5dede;   /* graticule */
+  --paper: #f2ecdf;         /* buff — authored sheet */
+  --paper-edge: #e4dbc8;
+  --card: #fdfdfa;          /* white — derived blocks and sheets */
+  --ink: #22303a;           /* deep chart ink */
+  --ink-soft: #5b6a70;
+  --contour: #8a6b4d;       /* contour brown — rules and structure */
+  --contour-faint: #cbbca2;
+  --water: #2e6e8e;         /* bathy blue — links */
+  --hazard: #c21e6e;        /* chart magenta — drift/hazard ONLY */
+  --serif: "Source Serif 4", Georgia, serif;
+  --display: "Marcellus", Georgia, serif;
+  --mono: "Fragment Mono", ui-monospace, "SF Mono", monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 17px; }
+
+body {
+  font-family: var(--serif);
+  font-weight: 380;
+  color: var(--ink);
+  line-height: 1.62;
+  background-color: var(--ground);
+  background-image:
+    linear-gradient(var(--ground-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--ground-line) 1px, transparent 1px);
+  background-size: 56px 56px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 1.25rem 4rem;
+}
+
+.skip {
+  position: absolute;
+  left: -9999px;
+  background: var(--card);
+  padding: 0.5rem 1rem;
+}
+.skip:focus { left: 1rem; top: 1rem; z-index: 10; }
+
+a { color: var(--water); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 2px solid var(--water); outline-offset: 2px; }
+
+/* -- masthead: the chart's title block ----------------------------------- */
+
+.masthead {
+  width: min(46rem, 100%);
+  text-align: center;
+  padding: 2.4rem 0 1.1rem;
+}
+
+.brand {
+  font-family: var(--display);
+  font-size: 2rem;
+  letter-spacing: 0.42em;
+  text-indent: 0.42em; /* recenters tracked caps */
+  text-transform: uppercase;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.brand-sub {
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  margin-top: 0.15rem;
+}
+
+.masthead nav {
+  margin-top: 1.15rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.1rem 1.15rem;
+}
+
+.masthead nav a {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  text-decoration: none;
+  padding: 0.2rem 0;
+}
+
+.masthead nav a:hover { color: var(--ink); }
+.masthead nav a[aria-current="page"] {
+  color: var(--ink);
+  border-bottom: 2px solid var(--contour);
+}
+
+/* -- graduation strip: the neatline's tick scale -------------------------- */
+
+.graduation {
+  width: min(46rem, 100%);
+  height: 9px;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+  background-image:
+    repeating-linear-gradient(90deg, var(--ink) 0 1px, transparent 1px 10px),
+    repeating-linear-gradient(90deg, var(--ink) 0 1px, transparent 1px 50px);
+  background-size: 100% 3px, 100% 7px;
+  background-position: bottom, bottom;
+  background-repeat: no-repeat;
+  margin-bottom: 2.2rem;
+}
+
+/* -- the sheet: buff for authored pages, white for derived ---------------- */
+
+.sheet {
+  width: min(46rem, 100%);
+  background: var(--paper);
+  border: 1px solid var(--contour);
+  box-shadow: 0 0 0 5px var(--paper), 0 0 0 6px var(--contour),
+    0 18px 40px -24px rgba(34, 48, 58, 0.45);
+  padding: 3rem 3.4rem 3.4rem;
+}
+
+.page-derived .sheet { background: var(--card); box-shadow: 0 0 0 5px var(--card), 0 0 0 6px var(--contour), 0 18px 40px -24px rgba(34, 48, 58, 0.45); }
+
+/* -- type ------------------------------------------------------------------ */
+
+.page-title {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 1.75rem;
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid var(--contour);
+  padding-bottom: 0.7rem;
+  margin-bottom: 1.6rem;
+}
+
+/* land features: tracked roman caps */
+h2 {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 1.02rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin: 2.3rem 0 0.8rem;
+}
+
+/* water features: italic serif, the chart convention */
+h3 {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 480;
+  font-size: 1.12rem;
+  margin: 1.8rem 0 0.6rem;
+}
+
+h4 {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin: 1.5rem 0 0.5rem;
+}
+
+p { margin: 0 0 1rem; }
+p:last-child { margin-bottom: 0; }
+
+ul, ol { margin: 0 0 1rem 1.4rem; }
+li { margin-bottom: 0.35rem; }
+
+strong { font-weight: 620; }
+
+blockquote {
+  font-style: italic;
+  color: var(--ink-soft);
+  border-left: 2px solid var(--contour);
+  padding-left: 1.1rem;
+  margin: 1.4rem 0;
+}
+
+hr {
+  border: none;
+  border-top: 1px dashed var(--contour-faint);
+  margin: 2rem 0;
+}
+
+/* -- code: soundings -------------------------------------------------------- */
+
+code {
+  font-family: var(--mono);
+  font-size: 0.83em;
+  /* keep ~> and -> literal; an arrow ligature in Elixir version specs lies */
+  font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "calt" 0;
+}
+
+p code, li code, h2 code, h3 code, blockquote code {
+  background: rgba(46, 110, 142, 0.08);
+  padding: 0.08em 0.3em;
+  border-radius: 2px;
+}
+
+pre {
+  background: var(--card);
+  border: 1px solid var(--paper-edge);
+  border-left: 3px solid var(--contour-faint);
+  padding: 1rem 1.15rem;
+  overflow-x: auto;
+  margin: 0 0 1.15rem;
+  line-height: 1.5;
+}
+
+.page-derived pre {
+  background: #f2f6f7; /* soundings sit on pale water in a white sheet */
+  border-color: var(--ground-line);
+}
+
+pre code { font-size: 0.78rem; background: none; padding: 0; }
+
+/* -- the signature: edition notices on derived content ---------------------- */
+
+.stamp {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  color: var(--ink-soft);
+  border-top: 1px solid var(--contour);
+  border-bottom: 1px solid var(--contour);
+  padding: 0.4rem 0.1rem;
+  margin: 1.6rem 0;
+}
+
+.stamp::before { content: "⌖ "; color: var(--contour); }
+
+/* embedded document panels on the self page */
+.derived-doc, .authored-doc {
+  border: 1px solid var(--paper-edge);
+  padding: 1.6rem 1.8rem;
+  margin: 1.2rem 0 1.8rem;
+}
+.derived-doc { background: var(--card); }
+.page-derived .authored-doc { background: var(--paper); border-color: var(--contour-faint); }
+
+/* -- hazard: chart magenta, drift semantics only ----------------------------- */
+
+.hazard { color: var(--hazard); }
+
+pre .hazard { font-weight: 400; }
+
+/* -- hero (index only) -------------------------------------------------------- */
+
+.hero {
+  position: relative;
+  padding: 1.2rem 0 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.hero-contours {
+  position: absolute;
+  right: -2.2rem;
+  top: -1.8rem;
+  width: 300px;
+  max-width: 55%;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.hero-thesis {
+  position: relative;
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 420;
+  font-size: 1.42rem;
+  line-height: 1.5;
+  max-width: 33ch;
+  margin-bottom: 1.2rem;
+}
+
+.hero-attribution {
+  position: relative;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+}
+
+/* -- ladder rungs (index + ladder pages) --------------------------------------- */
+
+.rungs { list-style: none; margin: 1.2rem 0 1.4rem; }
+
+.rungs li {
+  display: grid;
+  grid-template-columns: 3.2rem 11.5rem 1fr;
+  gap: 0 1rem;
+  padding: 0.55rem 0.2rem;
+  border-top: 1px solid var(--contour-faint);
+  align-items: baseline;
+}
+
+.rungs li:last-child { border-bottom: 1px solid var(--contour-faint); }
+
+.rungs .lvl {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  color: var(--contour);
+}
+
+.rungs .what {
+  font-family: var(--display);
+  font-size: 0.85rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.rungs .how { color: var(--ink-soft); font-size: 0.92rem; }
+
+/* -- footer --------------------------------------------------------------------- */
+
+footer {
+  width: min(46rem, 100%);
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  color: var(--ink-soft);
+  margin-top: 2.4rem;
+}
+
+footer p { margin: 0.2rem 0; }
+footer a { color: var(--ink-soft); }
+
+/* -- small screens ----------------------------------------------------------------- */
+
+@media (max-width: 640px) {
+  html { font-size: 16px; }
+  .sheet { padding: 1.8rem 1.3rem 2rem; }
+  .rungs li { grid-template-columns: 2.4rem 1fr; }
+  .rungs .how { grid-column: 2; margin-top: 0.15rem; }
+  .hero-contours { display: none; }
+  .hero-thesis { max-width: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}

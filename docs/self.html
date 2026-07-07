@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cohere on cohere · cohere</title>
+<meta name="description" content="The repo's live map and an intent card, as shipped.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Fragment+Mono:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cg fill='none' stroke='%238a6b4d' stroke-width='1.6'%3E%3Cpath d='M16 3 C 24 2.5, 29.5 9, 29 16 C 28.5 24, 22 29.5, 15 29 C 8 28.5, 2.5 23, 3 15.5 C 3.5 8, 9 3.5, 16 3 Z'/%3E%3Cpath d='M16 8.5 C 21 8.2, 24.5 12, 24 16.5 C 23.5 21, 20 24, 15.5 23.5 C 11 23, 8 20, 8.5 15.5 C 9 11, 12 8.8, 16 8.5 Z'/%3E%3Ccircle cx='16' cy='16' r='2.2' fill='%2322303a' stroke='none'/%3E%3C/g%3E%3C/svg%3E">
+</head>
+<body class="page-derived">
+<a class="skip" href="#main">Skip to content</a>
+<header class="masthead">
+  <a class="brand" href="index.html">Cohere</a>
+  <p class="brand-sub">a coherence layer for Elixir / Phoenix</p>
+  <nav aria-label="Pages">
+    <a href="index.html">Overview</a><a href="ladder.html">The ladder</a><a href="loop.html">The loop</a><a href="the-map.html">The map</a><a href="intent-cards.html">Intent cards</a><a href="design-docs.html">Design docs</a><a href="packets.html">Packets</a><a href="reference.html">Reference</a><a href="self.html" aria-current="page">Cohere on cohere</a>
+  </nav>
+</header>
+<div class="graduation" aria-hidden="true"></div>
+<main id="main" class="sheet">
+
+<h1 class="page-title">Cohere on cohere</h1>
+
+<p>Cohere runs on itself. Everything on this page is lifted from this
+repository's own <code>cohere/</code> directory — the same artifacts the CI gate
+checks on every push.</p>
+<div class="stamp">derived · cohere/map.md — the committed map of this repo · cohere 0.1.0</div>
+<section class="derived-doc">
+<h2 id="system-map-cohere">System Map — cohere</h2>
+<blockquote><p>Derived from the compiled application by <code>mix cohere.map</code>. Do not edit;
+regenerate instead. If this file disagrees with the code, the file is
+stale — never the other way around.</p></blockquote>
+<h3 id="capabilities">Capabilities</h3>
+<ul>
+<li><code>phoenix</code> 1.8.8 — routes derived from compiled routers</li>
+<li><code>ecto</code> 3.14.0 — objects and links derived from schema reflection</li>
+<li><code>boundary</code> absent — write-path governance is convention only, not compiler-checked</li>
+<li><code>tidewave</code> absent — no runtime introspection; agents verify via tests only</li>
+</ul>
+<h3 id="contexts">Contexts</h3>
+<h4 id="cohere-check-service-surface-33bec9f41f56">Cohere.Check — service <code>[surface:33bec9f41f56]</code></h4>
+<p>The check verb: every finding cohere can make, in one iterative command — the same command locally and in CI. Fix what it lists, run it again.</p>
+<p><strong>API</strong> (2): check/1 format/1
+<strong>Support:</strong> Report</p>
+<h4 id="derive-passive">Derive — passive</h4>
+<p><strong>Support:</strong> Modules, Group, Routes, Route, Schemas, Schema, Workers, Worker</p>
+<h4 id="cohere-design-service-surface-6e6a47afb022">Cohere.Design — service <code>[surface:6e6a47afb022]</code></h4>
+<p>Design docs: the authored artifact of the feature loop.</p>
+<p><strong>API</strong> (12): accept/2 filename/1 ground/2 issues/3 load_all/1 open_questions/1 parse/1 parse/2 promised_refs/1 skeleton/2 skeleton/3 unmet_promises/1
+<strong>Support:</strong> Doc</p>
+<h4 id="cohere-docs-service-surface-1e30bfb36209">Cohere.Docs — service <code>[surface:1e30bfb36209]</code></h4>
+<p>Renders the cohere docs site: authored markdown in <code>docs_src/</code> becomes static HTML in <code>docs/</code>, alongside pages derived from the compiled tasks and the repo's own coherence artifac…</p>
+<p><strong>API</strong> (3): build/0 build/1 render_markdown/1</p>
+<h4 id="cohere-drift-service-surface-33bec9f41f56">Cohere.Drift — service <code>[surface:33bec9f41f56]</code></h4>
+<p>The drift sentinel: mechanically detects when the project has moved out from under its coherence artifacts.</p>
+<p><strong>API</strong> (2): check/1 format/1
+<strong>Support:</strong> Report</p>
+<h4 id="cohere-intent-service-surface-b68cc2992204">Cohere.Intent — service <code>[surface:b68cc2992204]</code></h4>
+<p>Loads, parses, generates, and updates intent cards.</p>
+<p><strong>API</strong> (7): accept_drift/3 filename/1 load_all/1 parse/1 parse/2 refs/2 skeleton/2
+<strong>Support:</strong> Card</p>
+<h4 id="cohere-map-service-surface-eddee810a03a">Cohere.Map — service <code>[surface:eddee810a03a]</code></h4>
+<p>The derived map: the actual shape of the system, assembled from reflection over the compiled application.</p>
+<p><strong>API</strong> (3): build/1 fetch_group/2 render/1
+<strong>Support:</strong> Renderer</p>
+<h4 id="cohere-markdown-service-surface-67dd9bda9d60">Cohere.Markdown — service <code>[surface:67dd9bda9d60]</code></h4>
+<p>Frontmatter and section mechanics shared by every authored artifact — intent cards and design docs.</p>
+<p><strong>API</strong> (6): append_to_section/3 code_refs/1 ref_exists?/1 replace_frontmatter/3 sections/1 split_frontmatter/1</p>
+<h4 id="cohere-packet-service-surface-ddbe6f209766">Cohere.Packet — service <code>[surface:ddbe6f209766]</code></h4>
+<p>Assembles a work packet: context delivered, not discovered.</p>
+<p><strong>API</strong> (4): build/2 build_for_files/2 contexts_for_files/3 group_index/1</p>
+<h4 id="cohere-project-service-surface-7096a62da35a">Cohere.Project — service <code>[surface:7096a62da35a]</code></h4>
+<p>Discovers the host project: its OTP app, module inventory, namespaces, and which coherence-relevant capabilities are present.</p>
+<p><strong>API</strong> (7): design_dir/1 has?/2 intent_dir/1 load/0 load/1 map_path/1 source_index/1</p>
+<h4 id="cohere-surface-service-surface-8ed33ba5b8aa">Cohere.Surface — service <code>[surface:8ed33ba5b8aa]</code></h4>
+<p>The public function surface of a module, and a stable hash over it.</p>
+<p><strong>API</strong> (4): from_line/1 functions/1 hash/1 to_line/1</p>
+<h3 id="unclaimed-modules">Unclaimed Modules</h3>
+<ul>
+<li>Cohere (namespace root)</li>
+<li>Mix.Tasks.Cohere (outside app namespaces)</li>
+<li>Mix.Tasks.Cohere.Check (outside app namespaces)</li>
+<li>Mix.Tasks.Cohere.Complete (outside app namespaces)</li>
+<li>Mix.Tasks.Cohere.Design (outside app namespaces)</li>
+<li>Mix.Tasks.Cohere.Gen.Intent (outside app namespaces)</li>
+<li>Mix.Tasks.Cohere.Init (outside app namespaces)</li>
+<li>Mix.Tasks.Cohere.Map (outside app namespaces)</li>
+<li>Mix.Tasks.Cohere.Packet (outside app namespaces)</li>
+</ul>
+</section>
+<h2 id="the-authored-half-the-map-s-own-intent-card">The authored half: the map's own intent card</h2>
+<p>The map above is derived; the card below is authored. It binds to the
+<code>Cohere.Map</code> context by surface hash, so <code>mix cohere.check</code> fails the
+build the moment the code moves out from under it.</p>
+<section class="authored-doc">
+<h1 id="map-intent">Map — Intent</h1>
+<h2 id="purpose">Purpose</h2>
+<p>Assembles the derived truth: the actual shape of the host system, built
+from reflection over compiled modules and rendered to one git-tracked
+markdown file. The map is the level-2 rung — the artifact that cannot lie
+because nobody authors it.</p>
+<h2 id="invariants">Invariants</h2>
+<ul>
+<li>INV-MAP-001: the map is 100% derived. No hand-authored content survives
+regeneration, by design.</li>
+<li>INV-MAP-002: rendering is deterministic — stable ordering, no
+timestamps. Regenerating without a code change is a no-op diff.</li>
+<li>INV-MAP-003: derivation reads compiled modules and app config only.
+Never source text, never a running server, never the database — so it
+runs anywhere <code>mix compile</code> runs, including CI.</li>
+</ul>
+<h2 id="decisions">Decisions</h2>
+<ul>
+<li>DEC-MAP-001 (2026-07-02): classification is functional, not name-based
+(<code>__schema__/1</code> makes a schema, <code>Oban.Worker</code> behaviour makes a worker).
+Named after the revrec traps: a Cloak type living in the schema layer,
+contexts with zero CRUD-named functions. Rejected: source
+regex/AST scanning — names lie, compiled modules don't.</li>
+<li>DEC-MAP-002 (2026-07-02): one markdown artifact, one line per fact.
+Rejected: a JSON twin (a second rendering to keep honest) and markdown
+tables (token-heavy, not greppable).</li>
+<li>DEC-MAP-003 (2026-07-02): context groups classify as
+domain/service/passive/infra; pure plumbing (Application, Repo, Ecto
+types) collapses to an Infrastructure list instead of posing as
+contexts. Rejected: hiding plumbing entirely — the map must account for
+every module or "unclaimed" loses meaning.</li>
+</ul>
+<h2 id="non-goals">Non-goals</h2>
+<ul>
+<li>Call topology (which routes invoke which contexts) — needs compiler
+tracers; a future deriver, not this module.</li>
+<li>Runtime state (process trees, live config). That is Tidewave's layer;
+the map points at it instead of duplicating it.</li>
+</ul>
+<h2 id="open-questions">Open questions</h2>
+<ul>
+<li>Umbrella projects: one map per child app, or one merged map at the root?</li>
+</ul>
+<h2 id="accepted-drift">Accepted drift</h2>
+</section>
+</main>
+<footer>
+  <p>cohere 0.1.0 · derived where possible, authored where necessary</p>
+  <p><a href="self.md">this page as markdown</a> · <a href="llms.txt">llms.txt</a> · <a href="https://github.com/mhyrr/cohere">github</a> · MIT</p>
+</footer>
+</body>
+</html>
