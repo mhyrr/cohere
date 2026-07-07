@@ -229,6 +229,12 @@ defmodule Cohere.Design do
   defp ref_issues(doc, project) do
     prefix = inspect(project.namespace) <> "."
 
+    # A draft's promised refs are exempt everywhere in the doc, not just
+    # inside the Promised surface section (DEC-FEA-004) — a draft naming
+    # its own not-yet-built module in prose is a promise, not a dead ref.
+    # Accepted docs get no exemption: a vanished ref there is real news.
+    promised = if doc.status == :draft, do: promised_refs(doc), else: []
+
     doc.sections
     |> Elixir.Map.drop([@promised_heading])
     |> Elixir.Map.values()
@@ -237,6 +243,7 @@ defmodule Cohere.Design do
     |> Enum.filter(fn {module, _, _} ->
       String.starts_with?(module, prefix) or module == inspect(project.namespace)
     end)
+    |> Enum.reject(&(&1 in promised))
     |> Enum.reject(&Markdown.ref_exists?/1)
     |> Enum.map(fn
       {module, nil, nil} -> {:broken_ref, module}

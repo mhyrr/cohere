@@ -135,6 +135,7 @@ defmodule Cohere.DesignTest do
     ## Shape
 
     Builds on `Fixture.Accounts.create_user/1` and `Fixture.Accounts.no_such/9`.
+    Will call `Fixture.Accounts.not_built_yet/1` from the new flow.
     Ignores `Enum.map/2` (outside the namespace).
 
     ## Promised surface
@@ -149,6 +150,32 @@ defmodule Cohere.DesignTest do
     assert {:broken_ref, "Fixture.Accounts.no_such/9"} in issues
     refute Enum.any?(issues, &match?({:broken_ref, "Fixture.Accounts.not_built_yet" <> _}, &1))
     refute Enum.any?(issues, &match?({:anchor_missing, "Accounts"}, &1))
+  end
+
+  test "promised-ref exemption is draft-only: accepted docs flag vanished refs", %{
+    project: project,
+    map: map
+  } do
+    text = """
+    ---
+    design: y
+    status: accepted
+    contexts: Accounts
+    ---
+
+    ## Shape
+
+    Will call `Fixture.Accounts.not_built_yet/1` from the new flow.
+
+    ## Promised surface
+
+    - `Fixture.Accounts.not_built_yet/1`
+    """
+
+    {:ok, doc} = Design.parse(text)
+    issues = Design.issues(doc, map, project)
+
+    assert {:broken_ref, "Fixture.Accounts.not_built_yet/1"} in issues
   end
 
   test "load_all reads the design directory", %{project: project} do
