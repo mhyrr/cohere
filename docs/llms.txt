@@ -9,5 +9,6 @@
 - [Intent cards](https://mhyrr.github.io/cohere/intent-cards.md): The authored layer of purpose, invariants, and decisions, hash-bound to the code so drift fails the build.
 - [Design docs](https://mhyrr.github.io/cohere/design-docs.md): The design conversation you'd have anyway, landing in one format the tooling reads.
 - [Packets](https://mhyrr.github.io/cohere/packets.md): Context delivered, not discovered. The coherence layer assembled for one task.
+- [FAQ](https://mhyrr.github.io/cohere/faq.md): Common questions, short answers.
 - [Reference](https://mhyrr.github.io/cohere/reference.md): Every mix task, derived from its own moduledoc.
 - [Cohere on cohere](https://mhyrr.github.io/cohere/self.md): The repo's live map and an intent card, as shipped.
