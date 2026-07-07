@@ -15,9 +15,9 @@ strongest binding its nature allows.
 
 ### Why not just watch git diffs?
 
-Git watches text; the surface hash watches the contract. File churn
-isn't drift: refactors, private helpers, and comments never move the
-public surface, so the card stays quiet. Drift isn't always file
+Git can only see that text changed. The surface hash tracks the
+contract. File churn isn't drift: refactors, private helpers, and
+comments never move the public surface, so the card stays quiet. Drift isn't always file
 churn: macro-generated functions, a new `defdelegate`, or a relocated
 module change the surface without touching the paths a git rule
 watches, and reflection over the compiled module catches them anyway.
@@ -32,15 +32,15 @@ dated trace. The surface hash is a lockfile for intent.
 Reading code gets you what the code is, re-derived expensively every
 session. It can't get you what isn't in the code at all: no context
 window derives "we rejected Decimal because rounding leaked at the
-boundaries." The map is a cache of what can be derived from code, and
-cards hold what can't be.
+boundaries." The map is a cache of everything derivable from the
+code. Cards exist for the part that isn't.
 
 ### Why doesn't the tool use an LLM?
 
-A gate has to be deterministic to sit in CI: same repo, same verdict,
-no flake, no API bill. A summary that can hallucinate is unbound
-prose, the failure mode this exists to kill. Models consume the
-outputs and are never trusted to produce them.
+A gate has to be deterministic to sit in CI: the same repo must
+produce the same verdict, with nothing to flake and no API bill to
+pay. A summary that can hallucinate is just more unbound prose.
+Models consume the outputs and are never trusted to produce them.
 
 ### How is this different from spec-driven development?
 
@@ -54,16 +54,16 @@ the intent."
 
 ### The hash covers the public surface. What about a behavior change that keeps the signature?
 
-It doesn't catch it, and claiming otherwise would be lying. The hash
-catches contract shape; behavior belongs to the test suite, and at
-level 4 to runtime verification. The card's invariants exist to tell
-the test writer what must stay true.
+It doesn't. The hash catches changes to the contract's shape.
+Behavior belongs to the test suite, and at level 4 to runtime
+verification. The card's invariants exist to tell the test writer
+what must stay true.
 
 ### Won't `--accept` become a rubber stamp?
 
-It can. But it's a dated, attributable stamp on an exact
-`+fun/1 −fun/2` delta. Cohere can't make anyone think. It makes
-not-thinking leave a trace, and silent rot becomes visible negligence.
+It can. But the stamp is dated, attributable, and attached to an
+exact `+fun/1 −fun/2` delta. Nothing makes a reviewer think; what
+changes is that skipping the review now leaves a visible record.
 
 ### Who wins when the card and the code disagree?
 
@@ -99,7 +99,6 @@ usual three.
 
 The map maintains itself. Cards only demand attention when a public
 surface moves, and then the build stops and names the exact delta.
-Forgetting is the one failure mode that has been made impossible.
 
 ### Am I locked in?
 

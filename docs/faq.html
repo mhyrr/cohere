@@ -32,9 +32,9 @@ rot (it's derived), cards rot loudly (the build fails), designs are
 allowed to age (they're dated history). Every artifact gets the
 strongest binding its nature allows.</p>
 <h3 id="why-not-just-watch-git-diffs">Why not just watch git diffs?</h3>
-<p>Git watches text; the surface hash watches the contract. File churn
-isn't drift: refactors, private helpers, and comments never move the
-public surface, so the card stays quiet. Drift isn't always file
+<p>Git can only see that text changed. The surface hash tracks the
+contract. File churn isn't drift: refactors, private helpers, and
+comments never move the public surface, so the card stays quiet. Drift isn't always file
 churn: macro-generated functions, a new <code>defdelegate</code>, or a relocated
 module change the surface without touching the paths a git rule
 watches, and reflection over the compiled module catches them anyway.
@@ -47,13 +47,13 @@ dated trace. The surface hash is a lockfile for intent.</p>
 <p>Reading code gets you what the code is, re-derived expensively every
 session. It can't get you what isn't in the code at all: no context
 window derives "we rejected Decimal because rounding leaked at the
-boundaries." The map is a cache of what can be derived from code, and
-cards hold what can't be.</p>
+boundaries." The map is a cache of everything derivable from the
+code. Cards exist for the part that isn't.</p>
 <h3 id="why-doesn-t-the-tool-use-an-llm">Why doesn't the tool use an LLM?</h3>
-<p>A gate has to be deterministic to sit in CI: same repo, same verdict,
-no flake, no API bill. A summary that can hallucinate is unbound
-prose, the failure mode this exists to kill. Models consume the
-outputs and are never trusted to produce them.</p>
+<p>A gate has to be deterministic to sit in CI: the same repo must
+produce the same verdict, with nothing to flake and no API bill to
+pay. A summary that can hallucinate is just more unbound prose.
+Models consume the outputs and are never trusted to produce them.</p>
 <h3 id="how-is-this-different-from-spec-driven-development">How is this different from spec-driven development?</h3>
 <p>Spec-first tools verify that evidence exists for what you authored: an
 ID appears in a test file, a command exits 0. Cohere derives truth
@@ -62,14 +62,14 @@ the spec have a pointer," the other asks "does the code still match
 the intent."</p>
 <h2 id="the-mechanism">The mechanism</h2>
 <h3 id="the-hash-covers-the-public-surface-what-about-a-behavior-change-that-keeps-the-signature">The hash covers the public surface. What about a behavior change that keeps the signature?</h3>
-<p>It doesn't catch it, and claiming otherwise would be lying. The hash
-catches contract shape; behavior belongs to the test suite, and at
-level 4 to runtime verification. The card's invariants exist to tell
-the test writer what must stay true.</p>
+<p>It doesn't. The hash catches changes to the contract's shape.
+Behavior belongs to the test suite, and at level 4 to runtime
+verification. The card's invariants exist to tell the test writer
+what must stay true.</p>
 <h3 id="won-t-accept-become-a-rubber-stamp">Won't <code>--accept</code> become a rubber stamp?</h3>
-<p>It can. But it's a dated, attributable stamp on an exact
-<code>+fun/1 −fun/2</code> delta. Cohere can't make anyone think. It makes
-not-thinking leave a trace, and silent rot becomes visible negligence.</p>
+<p>It can. But the stamp is dated, attributable, and attached to an
+exact <code>+fun/1 −fun/2</code> delta. Nothing makes a reviewer think; what
+changes is that skipping the review now leaves a visible record.</p>
 <h3 id="who-wins-when-the-card-and-the-code-disagree">Who wins when the card and the code disagree?</h3>
 <p>On facts, the map, because nobody authors it. On intent, the human:
 disagreement halts the build until someone re-reviews, instead of the
@@ -93,8 +93,7 @@ actually matters, and stop there. Money, auth, and tenancy are the
 usual three.</p>
 <h3 id="more-files-i-ll-forget-to-maintain">More files I'll forget to maintain.</h3>
 <p>The map maintains itself. Cards only demand attention when a public
-surface moves, and then the build stops and names the exact delta.
-Forgetting is the one failure mode that has been made impossible.</p>
+surface moves, and then the build stops and names the exact delta.</p>
 <h3 id="am-i-locked-in">Am I locked in?</h3>
 <p>No. It's a dev and test dependency with zero runtime dependencies, and
 every artifact is plain markdown in your repo. Remove the package and
