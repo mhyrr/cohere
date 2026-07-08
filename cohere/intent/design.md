@@ -1,8 +1,8 @@
 ---
 context: Cohere.Design
-reviewed: 2026-07-03
-surface: 6e6a47afb022
-functions: accept/2 filename/1 ground/2 issues/3 load_all/1 open_questions/1 parse/1 parse/2 promised_refs/1 skeleton/2 skeleton/3 unmet_promises/1
+reviewed: 2026-07-08
+surface: 0d23bfc34d9d
+functions: accept/2 anchored_to/3 filename/1 ground/2 issues/3 load_all/1 open_questions/1 parse/1 parse/2 promised_refs/1 skeleton/2 skeleton/3 unmet_promises/1
 ---
 
 # Design — Intent
@@ -46,6 +46,13 @@ performs the one status transition the lifecycle allows.
   ground and warn in check rather than erroring — a design may introduce
   the context it anchors; `mix cohere.complete` is where anchors must
   finally resolve.
+- DEC-DES-004 (2026-07-08): anchor resolution is Design's to own.
+  `Cohere.Design.anchored_to/3` filters docs to a map group for
+  consumers like the packet, resolving anchors exactly as check does
+  (`Cohere.Map.fetch_group/2`); superseded docs never match — the
+  superseding doc carries the thread (DEC-PAC-003 in
+  `cohere/design/packet-sources.md`). Rejected: a second matcher inside
+  `Cohere.Packet` — two resolutions drift apart.
 
 ## Non-goals
 
@@ -61,3 +68,4 @@ performs the one status transition the lifecycle allows.
   omitted, the way `mix cohere.packet --diff` does?
 
 ## Accepted drift
+- 2026-07-08: surface changed (+anchored_to/3) — accepted

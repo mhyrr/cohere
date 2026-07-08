@@ -23,11 +23,11 @@ The check verb: every finding cohere can make, in one iterative command — the 
 ### Derive — passive
 **Support:** Modules, Group, Routes, Route, Schemas, Schema, Workers, Worker
 
-### Cohere.Design — service `[surface:6e6a47afb022]`
+### Cohere.Design — service `[surface:0d23bfc34d9d]`
 
 Design docs: the authored artifact of the feature loop.
 
-**API** (12): accept/2 filename/1 ground/2 issues/3 load_all/1 open_questions/1 parse/1 parse/2 promised_refs/1 skeleton/2 skeleton/3 unmet_promises/1
+**API** (13): accept/2 anchored_to/3 filename/1 ground/2 issues/3 load_all/1 open_questions/1 parse/1 parse/2 promised_refs/1 skeleton/2 skeleton/3 unmet_promises/1
 **Support:** Doc
 
 ### Cohere.Docs — service `[surface:1e30bfb36209]`
@@ -63,11 +63,11 @@ Frontmatter and section mechanics shared by every authored artifact — intent c
 
 **API** (6): append_to_section/3 code_refs/1 ref_exists?/1 replace_frontmatter/3 sections/1 split_frontmatter/1
 
-### Cohere.Packet — service `[surface:ddbe6f209766]`
+### Cohere.Packet — service `[surface:ce98880a2916]`
 
 Assembles a work packet: context delivered, not discovered.
 
-**API** (4): build/2 build_for_files/2 contexts_for_files/3 group_index/1
+**API** (5): build/2 build_for_files/2 contexts_for_files/3 group_index/1 guidance_paths/2
 
 ### Cohere.Project — service `[surface:7096a62da35a]`
 

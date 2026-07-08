@@ -60,6 +60,23 @@ defmodule Cohere.Design do
     end
   end
 
+  @doc """
+  Filters docs to those whose `contexts:` anchors resolve to the given map
+  group — the packet's design slice, using the same anchor resolution as
+  `check` (`Cohere.Map.fetch_group/2`), not a second matcher.
+
+  Superseded docs never match: the superseding doc carries the thread
+  (DEC-PAC-003 in `cohere/design/packet-sources.md`).
+  """
+  @spec anchored_to([Doc.t()], Map.t(), map()) :: [Doc.t()]
+  def anchored_to(docs, %Map{} = map, group) do
+    docs
+    |> Enum.reject(&(&1.status == :superseded))
+    |> Enum.filter(fn doc ->
+      Enum.any?(doc.contexts, &(Map.fetch_group(map, &1) == group))
+    end)
+  end
+
   @doc "Parses design doc text. Returns `{:ok, %Doc{}}` or `{:error, reason}`."
   @spec parse(String.t(), String.t() | nil) :: {:ok, Doc.t()} | {:error, term()}
   def parse(text, path \\ nil) do

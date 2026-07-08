@@ -2,8 +2,10 @@ defmodule Mix.Tasks.Cohere.Packet do
   @shortdoc "Assembles a work packet for the contexts a task touches"
 
   @moduledoc """
-  Prints a work packet — map slices, intent cards, related routes, and
-  runtime-verification pointers — for the contexts a task touches.
+  Prints a work packet — map slices, intent cards, anchored designs
+  (drafts inlined as live intent, accepted as pointers), per-directory
+  agent guidance, related routes, and runtime-verification pointers —
+  for the contexts a task touches.
 
       $ mix cohere.packet deals billing        # contexts named explicitly
       $ mix cohere.packet --diff                # contexts touched by this branch

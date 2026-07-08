@@ -23,6 +23,27 @@ defmodule Cohere.DesignTest do
     File.write!(Path.join(dir, name), contents)
   end
 
+  describe "anchored_to/3" do
+    test "resolves anchors like check does — case-insensitive, module or name", %{
+      map: map,
+      accounts: accounts
+    } do
+      docs =
+        for {slug, contexts, status} <- [
+              {"a", ["accounts"], :draft},
+              {"b", ["Fixture.Accounts"], :accepted},
+              {"c", ["billing"], :draft},
+              {"d", ["accounts"], :superseded}
+            ] do
+          %Design.Doc{slug: slug, contexts: contexts, status: status}
+        end
+
+      anchored = Design.anchored_to(docs, map, accounts)
+
+      assert Enum.map(anchored, & &1.slug) == ["a", "b"]
+    end
+  end
+
   test "skeleton parses back as a draft bound to its anchors" do
     {:ok, doc} =
       "deal-reversals"

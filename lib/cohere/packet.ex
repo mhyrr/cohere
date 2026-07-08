@@ -3,14 +3,17 @@ defmodule Cohere.Packet do
   Assembles a work packet: context delivered, not discovered.
 
   Given the contexts a task touches, the packet gathers (a) the map slice
-  for those contexts, (b) their intent cards verbatim, (c) plausibly related
-  routes and jobs, and (d) pointers to runtime verification when Tidewave is
-  present. The rule is *link, don't restate*: the packet carries the source
-  records and points at everything else; it never paraphrases code into a
-  second truth.
+  for those contexts, (b) their intent cards verbatim, (c) draft designs
+  anchored to them — inlined loudly, they are live intent not yet distilled
+  into cards — and accepted designs as pointers, (d) per-directory agent
+  guidance (`AGENTS.md`/`CLAUDE.md` next to the context's source) verbatim,
+  (e) plausibly related routes and jobs, and (f) pointers to runtime
+  verification when Tidewave is present. The rule is *link, don't restate*:
+  the packet carries the source records and points at everything else; it
+  never paraphrases code into a second truth.
   """
 
-  alias Cohere.{Intent, Map, Project}
+  alias Cohere.{Design, Intent, Map, Project}
   alias Cohere.Map.Renderer
 
   @doc """
@@ -31,7 +34,7 @@ defmodule Cohere.Packet do
     case unknown do
       [] ->
         groups = Enum.map(found, fn {_name, group} -> group end)
-        {:ok, render(project, map, groups, cards)}
+        {:ok, render(project, map, groups, cards, Design.load_all(project))}
 
       _ ->
         {:error, {:unknown_contexts, Enum.map(unknown, fn {name, _} -> name end)}}
@@ -61,7 +64,8 @@ defmodule Cohere.Packet do
       contexts ->
         cards = Intent.load_all(project)
         groups = Enum.map(contexts, &Map.fetch_group(map, &1))
-        {:ok, render(project, map, groups, cards, scope_section(files, report)), report}
+        designs = Design.load_all(project)
+        {:ok, render(project, map, groups, cards, designs, scope_section(files, report)), report}
     end
   end
 
@@ -107,11 +111,42 @@ defmodule Cohere.Packet do
     |> Enum.reject(&is_nil/1)
   end
 
-  defp render(project, map, groups, cards, scope \\ nil) do
+  @guidance_files ~w(AGENTS.md CLAUDE.md)
+
+  @doc """
+  Guidance files (`AGENTS.md`, `CLAUDE.md`) living in the directories a
+  group's modules compile from — source-index-derived, not path convention.
+
+  Root-level guidance is excluded: every harness loads it already, so the
+  packet keeps it as a pointer (DEC-PAC-004 in
+  `cohere/design/packet-sources.md`).
+  """
+  @spec guidance_paths(%{String.t() => [module()]}, map()) :: [String.t()]
+  def guidance_paths(source_index, group) do
+    modules = MapSet.new(group_modules(group))
+
+    source_index
+    |> Enum.filter(fn {_path, mods} -> Enum.any?(mods, &(&1 in modules)) end)
+    |> Enum.map(fn {path, _mods} -> Path.dirname(path) end)
+    |> Enum.uniq()
+    |> Enum.reject(&(&1 == "."))
+    |> Enum.sort()
+    |> Enum.flat_map(fn dir ->
+      for file <- @guidance_files,
+          path = Path.join(dir, file),
+          File.exists?(path),
+          do: path
+    end)
+  end
+
+  defp render(project, map, groups, cards, designs, scope \\ nil) do
+    source_index = Project.source_index(project)
+
     [
       header(project, groups),
       scope,
-      Enum.map(groups, &context_section(project, map, &1, cards)),
+      inflight_section(map, groups, designs),
+      Enum.map(groups, &context_section(project, map, &1, cards, designs, source_index)),
       runtime_section(project),
       pointers_section(project)
     ]
@@ -159,17 +194,103 @@ defmodule Cohere.Packet do
     """
   end
 
-  defp context_section(project, map, group, cards) do
+  defp context_section(project, map, group, cards, designs, source_index) do
     card = Enum.find(cards, &(&1.context == group.context))
 
     [
       "## Context: #{group.context && inspect(group.context)}#{if group.context == nil, do: group.name}\n",
       Renderer.render_group(map, group),
       routes_slice(map, group),
-      card_slice(project, card, group)
+      card_slice(project, card, group),
+      designs_slice(map, group, designs),
+      guidance_slice(source_index, group)
     ]
     |> Enum.reject(&is_nil/1)
     |> Enum.join("\n")
+  end
+
+  # Drafts are live intent not yet distilled into cards — the one thing a
+  # packet holder cannot discover from map + cards. Rendered once per
+  # packet, not per context (DEC-PAC-002).
+  defp inflight_section(map, groups, designs) do
+    drafts =
+      groups
+      |> Enum.flat_map(&Design.anchored_to(designs, map, &1))
+      |> Enum.uniq_by(& &1.slug)
+      |> Enum.filter(&(&1.status == :draft))
+
+    case drafts do
+      [] ->
+        nil
+
+      drafts ->
+        """
+        ## In-flight designs
+
+        > Draft designs anchored to this packet's contexts: someone is
+        > mid-change here, and this intent is not yet distilled into cards.
+        > Read before designing against this ground.
+        """ <> "\n" <> Enum.map_join(drafts, "\n", &draft_excerpt/1)
+    end
+  end
+
+  defp draft_excerpt(doc) do
+    [
+      "### #{doc.slug} (draft#{doc.date && ", #{doc.date}"}) — anchors: #{Enum.join(doc.contexts, ", ")}\n",
+      "_Excerpt; full doc at #{doc.path}._\n",
+      excerpt(doc, "Problem"),
+      excerpt(doc, "Promised surface")
+    ]
+    |> Enum.reject(&is_nil/1)
+    |> Enum.join("\n")
+  end
+
+  # Comment-only sections render as absent — a skeleton's template comment
+  # is not content, mirroring INV-DES-003's rule for refs.
+  defp excerpt(doc, heading) do
+    content =
+      (doc.sections[heading] || "")
+      |> String.replace(~r/<!--.*?-->/s, "")
+      |> String.trim()
+
+    if content == "", do: nil, else: "**#{heading}**\n\n#{content}\n"
+  end
+
+  # Accepted designs are pointers, never inlined: their durable content
+  # lives in the cards by construction (DEC-PAC-001).
+  defp designs_slice(map, group, designs) do
+    accepted =
+      designs
+      |> Design.anchored_to(map, group)
+      |> Enum.filter(&(&1.status == :accepted))
+
+    case accepted do
+      [] ->
+        nil
+
+      docs ->
+        """
+        ### Designs (accepted — durable content lives in the card)
+
+        #{Enum.map_join(docs, "\n", &"- `#{&1.slug}`#{&1.date && " (#{&1.date})"} — #{&1.path}")}
+        """
+    end
+  end
+
+  defp guidance_slice(source_index, group) do
+    case guidance_paths(source_index, group) do
+      [] ->
+        nil
+
+      paths ->
+        Enum.map_join(paths, "\n", fn path ->
+          """
+          ### Guidance (#{path})
+
+          #{String.trim_trailing(File.read!(path))}
+          """
+        end)
+    end
   end
 
   defp card_slice(project, nil, group) do

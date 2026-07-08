@@ -3,6 +3,34 @@ defmodule Cohere.PacketTest do
 
   alias Cohere.{Intent, Map, Packet, Project}
 
+  defp write_design!(project, slug, attrs) do
+    dir = Project.design_dir(project)
+    File.mkdir_p!(dir)
+
+    File.write!(Path.join(dir, slug <> ".md"), """
+    ---
+    design: #{slug}
+    status: #{attrs[:status]}
+    date: 2026-07-08
+    contexts: #{attrs[:contexts]}
+    ---
+
+    # #{slug} — Design
+
+    ## Problem
+
+    #{attrs[:problem] || "The problem prose."}
+
+    ## Shape
+
+    Long shape prose that must never reach a packet.
+
+    ## Promised surface
+
+    <!-- template comment only — renders as absent -->
+    """)
+  end
+
   @moduletag :tmp_dir
 
   setup %{tmp_dir: tmp} do
@@ -42,6 +70,95 @@ defmodule Cohere.PacketTest do
   test "unknown contexts error by name" do
     project = Cohere.Fixtures.project()
     assert {:error, {:unknown_contexts, ["nope"]}} = Packet.build(project, ["nope"])
+  end
+
+  describe "design slices" do
+    test "a draft anchoring several packeted contexts inlines loudly, once", %{project: project} do
+      write_design!(project, "reversals",
+        status: "draft",
+        contexts: "accounts, billing",
+        problem: "Reversals do not exist yet."
+      )
+
+      {:ok, packet} = Packet.build(project, ["accounts", "billing"])
+
+      assert packet =~ "## In-flight designs"
+      assert packet =~ "Reversals do not exist yet."
+      assert packet =~ Path.join(Project.design_dir(project), "reversals.md")
+      # once per packet, not once per anchored context (DEC-PAC-002)
+      assert length(String.split(packet, "Reversals do not exist yet.")) == 2
+      # excerpt means Problem, never Shape
+      refute packet =~ "Long shape prose"
+      # a comment-only Promised surface renders as absent
+      refute packet =~ "**Promised surface**"
+    end
+
+    test "accepted designs are pointers, never content", %{project: project} do
+      write_design!(project, "reversals",
+        status: "accepted",
+        contexts: "accounts",
+        problem: "Accepted prose stays out of packets."
+      )
+
+      {:ok, packet} = Packet.build(project, ["accounts"])
+
+      assert packet =~ "### Designs"
+      assert packet =~ "`reversals`"
+      assert packet =~ Path.join(Project.design_dir(project), "reversals.md")
+      refute packet =~ "Accepted prose stays out of packets."
+      refute packet =~ "## In-flight designs"
+    end
+
+    test "superseded designs and designs for other contexts never render", %{project: project} do
+      write_design!(project, "old-reversals", status: "superseded", contexts: "accounts")
+      write_design!(project, "billing-only", status: "draft", contexts: "billing")
+
+      {:ok, packet} = Packet.build(project, ["accounts"])
+
+      refute packet =~ "old-reversals"
+      refute packet =~ "billing-only"
+    end
+  end
+
+  describe "guidance_paths/2" do
+    test "finds directory guidance via the source index, root excluded", %{
+      tmp_dir: tmp,
+      accounts: accounts
+    } do
+      dir = Path.join(tmp, "lib/fixture")
+      File.mkdir_p!(dir)
+      File.write!(Path.join(dir, "CLAUDE.md"), "Accounts guidance.")
+      File.write!(Path.join(dir, "AGENTS.md"), "Agent guidance.")
+      # root guidance stays a pointer (DEC-PAC-004)
+      File.write!(Path.join(tmp, "CLAUDE.md"), "Root guidance.")
+
+      index = %{
+        Path.join(dir, "accounts.ex") => [Fixture.Accounts],
+        Path.join(dir, "accounts/user.ex") => [Fixture.Accounts.User],
+        Path.join(tmp, "root.ex") => [Fixture.Accounts]
+      }
+
+      # relative-rooted index entry for the root-exclusion branch
+      assert Packet.guidance_paths(%{"top.ex" => [Fixture.Accounts]}, accounts) == []
+
+      paths = Packet.guidance_paths(index, accounts)
+
+      assert Path.join(dir, "AGENTS.md") in paths
+      assert Path.join(dir, "CLAUDE.md") in paths
+      # tmp root's CLAUDE.md only appears because tmp is a real dir in the
+      # index — the "." (project root) entry is what the pointer rule excludes
+      refute "CLAUDE.md" in paths
+    end
+
+    test "modules outside the group contribute nothing", %{tmp_dir: tmp, accounts: accounts} do
+      dir = Path.join(tmp, "lib/elsewhere")
+      File.mkdir_p!(dir)
+      File.write!(Path.join(dir, "CLAUDE.md"), "Not yours.")
+
+      index = %{Path.join(dir, "billing.ex") => [Fixture.Billing]}
+
+      assert Packet.guidance_paths(index, accounts) == []
+    end
   end
 
   describe "diff-driven assembly" do
