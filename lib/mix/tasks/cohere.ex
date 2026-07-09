@@ -105,6 +105,20 @@ defmodule Mix.Tasks.Cohere do
         Mix.shell().info("designs: #{length(drafts)} in flight, #{settled} settled")
         Mix.shell().info("in flight: #{flights}")
     end
+
+    recent_designs_line(designs)
+  end
+
+  # The three newest by frontmatter date (the design's start date — the
+  # only date every doc carries), stable within a day by filename order.
+  defp recent_designs_line(designs) do
+    recent =
+      designs
+      |> Enum.sort_by(&(&1.date || ""), :desc)
+      |> Enum.take(3)
+      |> Enum.map_join(", ", &"#{&1.slug} (#{&1.status}, #{&1.date})")
+
+    Mix.shell().info("recent: #{recent}")
   end
 
   defp level1([]), do: {:missing, "no AGENTS.md / CLAUDE.md / usage-rules.md"}
