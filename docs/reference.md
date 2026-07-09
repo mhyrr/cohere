@@ -18,6 +18,10 @@ requires.
 Levels: 1 static guidance, 2 derived map, 3 checked intent cards,
 4 governed verbs / runtime verification, 5 delivered context (packets).
 
+Registered derived artifacts (`config :cohere, derived:`) count toward
+the L2 rung — they are the map's discipline applied to other committed
+outputs — and are listed with their freshness below the ladder.
+
 
 ## mix cohere.init
 

@@ -9,6 +9,10 @@ defmodule Mix.Tasks.Cohere do
 
   Levels: 1 static guidance, 2 derived map, 3 checked intent cards,
   4 governed verbs / runtime verification, 5 delivered context (packets).
+
+  Registered derived artifacts (`config :cohere, derived:`) count toward
+  the L2 rung — they are the map's discipline applied to other committed
+  outputs — and are listed with their freshness below the ladder.
   """
 
   use Mix.Task
@@ -65,6 +69,19 @@ defmodule Mix.Tasks.Cohere do
     end
 
     designs_line(designs)
+    artifacts_line(report.derived)
+  end
+
+  # Same rule as designs: quiet only when nothing is registered.
+  defp artifacts_line([]), do: :ok
+
+  defp artifacts_line(derived) do
+    list =
+      Enum.map_join(derived, ", ", fn a ->
+        "#{a.name} (#{a.path}) — #{a.status}"
+      end)
+
+    Mix.shell().info("derived artifacts: #{list}")
   end
 
   # Affirmative either way: "nothing in flight" must be distinguishable
@@ -93,9 +110,18 @@ defmodule Mix.Tasks.Cohere do
   defp level1([]), do: {:missing, "no AGENTS.md / CLAUDE.md / usage-rules.md"}
   defp level1(files), do: {:ok, Enum.join(files, ", ")}
 
-  defp level2(%{map_status: :fresh}), do: {:ok, "map present and fresh"}
+  defp level2(%{map_status: :fresh, derived: derived}) do
+    case Enum.count(derived, &(&1.status != :fresh)) do
+      0 -> {:ok, "map#{fresh_artifacts_note(derived)} fresh"}
+      n -> {:partial, "map fresh; #{n} derived artifact(s) stale — `mix cohere.check`"}
+    end
+  end
+
   defp level2(%{map_status: :stale}), do: {:partial, "map present but stale — `mix cohere.map`"}
   defp level2(%{map_status: :missing}), do: {:missing, "no map — `mix cohere.map`"}
+
+  defp fresh_artifacts_note([]), do: " present and"
+  defp fresh_artifacts_note(derived), do: " + #{length(derived)} derived artifact(s)"
 
   defp level3([], _report), do: {:missing, "no intent cards — `mix cohere.gen.intent <context>`"}
 
