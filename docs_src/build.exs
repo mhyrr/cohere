@@ -1,4 +1,5 @@
 # Builds the docs site: mix run docs_src/build.exs
-# CI proves freshness afterwards with: git diff --exit-code docs/
-Cohere.Docs.build(base_url: "https://mhyrr.github.io/cohere")
+# The same render is registered with the freshness gate (config :cohere,
+# derived:), so `mix cohere.check` fails while docs/ is stale.
+Cohere.Docs.gate_build("docs")
 IO.puts("docs/ built")

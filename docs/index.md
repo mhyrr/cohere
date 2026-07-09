@@ -48,7 +48,8 @@ Unbound prose is future lies.
 ```
 
 ```console
-$ mix cohere.init            # scaffold cohere/, derive the first map
+$ mix cohere.init            # scaffold cohere/, derive the first map,
+                             # land the loop's instructions in AGENTS.md
 $ mix cohere                 # where does this project stand?
 ```
 

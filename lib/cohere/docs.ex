@@ -19,6 +19,15 @@ defmodule Cohere.Docs do
   alias Cohere.Markdown
 
   @tagline "A coherence layer for Elixir/Phoenix projects."
+  @base_url "https://mhyrr.github.io/cohere"
+
+  @doc """
+  The canonical site render into a given directory — one invocation, used
+  by `docs_src/build.exs` and registered with the freshness gate
+  (`config :cohere, derived:`), so a manual rebuild cannot differ from a
+  gated one by flag drift.
+  """
+  def gate_build(out), do: build(out: out, base_url: @base_url)
 
   # Loop verbs first, plumbing after; tasks not listed here sort in at the
   # end alphabetically, so a new task can't silently miss the reference.

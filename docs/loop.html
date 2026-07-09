@@ -36,7 +36,9 @@ $ mix cohere.complete deal-reversals                  # COMPLETE
 <p><code>mix cohere.design deal-reversals --contexts deals</code> scaffolds
 <code>cohere/design/deal-reversals.md</code> with <code>status: draft</code> and assembles
 its <strong>Existing ground</strong>: each anchored context's current API from the
-map, plus the invariants and decisions from its intent card, dated.</p>
+map, plus the invariants and decisions from its intent card, dated.
+Omit <code>--contexts</code> on a branch and the anchors are inferred from the
+diff, the same way <code>mix cohere.packet --diff</code> resolves them.</p>
 <p>A no-LLM tool can't judge that your design contradicts INV-DEA-002.
 It does something better suited to a deterministic tool: it delivers
 INV-DEA-002 onto the page where you're designing, where a
@@ -55,9 +57,11 @@ record, and drift on history is information, not a bug.</p>
 <span class="hazard">drift detected</span></code></pre>
 <p>A drifted card means: re-read it against the new surface, update what
 your change invalidated, then accept. Accepting always leaves a dated
-trace in the card. <strong>Accepted drift is documented drift</strong>, and the
-failure mode this loop exists to kill is the silent kind.</p>
-<pre><code class="lang-console">$ mix cohere.check --accept deals
+trace in the card, attributed to whoever judged (<code>--by</code>, defaulting to
+git <code>user.name</code>) — in a repo where agents accept their own drift, the
+trace says so. <strong>Accepted drift is documented drift</strong>, and the failure
+mode this loop exists to kill is the silent kind.</p>
+<pre><code class="lang-console">$ mix cohere.check --accept deals --by greg
 cohere/intent/deals.md — rebound to surface df8be63a83b8, drift annotated
 </code></pre>
 <h2 id="complete">Complete</h2>

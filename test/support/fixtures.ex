@@ -133,12 +133,25 @@ defmodule Cohere.Fixtures do
 
   def modules, do: @modules
 
+  defmodule FakeArtifact do
+    @moduledoc false
+    # A derived-artifact render for gate tests: deterministic fixed tree.
+    def render(out) do
+      File.mkdir_p!(Path.join(out, "sub"))
+      File.write!(Path.join(out, "page.md"), "content v2\n")
+      File.write!(Path.join(out, "sub/nested.txt"), "nested\n")
+    end
+  end
+
   def project(overrides \\ []) do
     base = [
       app: :cohere,
       modules: @modules,
       namespace: Fixture,
-      web_namespace: FixtureWeb
+      web_namespace: FixtureWeb,
+      # never inherit the host repo's registrations (config :cohere,
+      # derived:) — fixture projects gate only what a test registers
+      derived: []
     ]
 
     Project.load(Keyword.merge(base, overrides))

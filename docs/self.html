@@ -48,20 +48,20 @@ stale — never the other way around.</p></blockquote>
 <strong>Support:</strong> Report</p>
 <h4 id="derive-passive">Derive — passive</h4>
 <p><strong>Support:</strong> Modules, Group, Routes, Route, Schemas, Schema, Workers, Worker</p>
-<h4 id="cohere-design-service-surface-6e6a47afb022">Cohere.Design — service <code>[surface:6e6a47afb022]</code></h4>
+<h4 id="cohere-design-service-surface-c3bf3d14798e">Cohere.Design — service <code>[surface:c3bf3d14798e]</code></h4>
 <p>Design docs: the authored artifact of the feature loop.</p>
-<p><strong>API</strong> (12): accept/2 filename/1 ground/2 issues/3 load_all/1 open_questions/1 parse/1 parse/2 promised_refs/1 skeleton/2 skeleton/3 unmet_promises/1
+<p><strong>API</strong> (14): accept/2 accept/3 anchored_to/3 filename/1 ground/2 issues/3 load_all/1 open_questions/1 parse/1 parse/2 promised_refs/1 skeleton/2 skeleton/3 unmet_promises/1
 <strong>Support:</strong> Doc</p>
-<h4 id="cohere-docs-service-surface-1e30bfb36209">Cohere.Docs — service <code>[surface:1e30bfb36209]</code></h4>
+<h4 id="cohere-docs-service-surface-80923c3ecdeb">Cohere.Docs — service <code>[surface:80923c3ecdeb]</code></h4>
 <p>Renders the cohere docs site: authored markdown in <code>docs_src/</code> becomes static HTML in <code>docs/</code>, alongside pages derived from the compiled tasks and the repo's own coherence artifac…</p>
-<p><strong>API</strong> (3): build/0 build/1 render_markdown/1</p>
-<h4 id="cohere-drift-service-surface-33bec9f41f56">Cohere.Drift — service <code>[surface:33bec9f41f56]</code></h4>
+<p><strong>API</strong> (4): build/0 build/1 gate_build/1 render_markdown/1</p>
+<h4 id="cohere-drift-service-surface-4f4931c09525">Cohere.Drift — service <code>[surface:4f4931c09525]</code></h4>
 <p>The drift sentinel: mechanically detects when the project has moved out from under its coherence artifacts.</p>
-<p><strong>API</strong> (2): check/1 format/1
+<p><strong>API</strong> (3): check/1 derived_status/2 format/1
 <strong>Support:</strong> Report</p>
-<h4 id="cohere-intent-service-surface-b68cc2992204">Cohere.Intent — service <code>[surface:b68cc2992204]</code></h4>
+<h4 id="cohere-intent-service-surface-b57e1a565df7">Cohere.Intent — service <code>[surface:b57e1a565df7]</code></h4>
 <p>Loads, parses, generates, and updates intent cards.</p>
-<p><strong>API</strong> (7): accept_drift/3 filename/1 load_all/1 parse/1 parse/2 refs/2 skeleton/2
+<p><strong>API</strong> (8): accept_drift/3 accept_drift/4 filename/1 load_all/1 parse/1 parse/2 refs/2 skeleton/2
 <strong>Support:</strong> Card</p>
 <h4 id="cohere-map-service-surface-eddee810a03a">Cohere.Map — service <code>[surface:eddee810a03a]</code></h4>
 <p>The derived map: the actual shape of the system, assembled from reflection over the compiled application.</p>
@@ -70,12 +70,15 @@ stale — never the other way around.</p></blockquote>
 <h4 id="cohere-markdown-service-surface-67dd9bda9d60">Cohere.Markdown — service <code>[surface:67dd9bda9d60]</code></h4>
 <p>Frontmatter and section mechanics shared by every authored artifact — intent cards and design docs.</p>
 <p><strong>API</strong> (6): append_to_section/3 code_refs/1 ref_exists?/1 replace_frontmatter/3 sections/1 split_frontmatter/1</p>
-<h4 id="cohere-packet-service-surface-ddbe6f209766">Cohere.Packet — service <code>[surface:ddbe6f209766]</code></h4>
+<h4 id="cohere-onboarding-service-surface-a950d1fd2f87">Cohere.Onboarding — service <code>[surface:a950d1fd2f87]</code></h4>
+<p>Owns the cohere block in the host's agent guidance file (<code>AGENTS.md</code>).</p>
+<p><strong>API</strong> (5): block/1 sync/1 sync/2 synced?/1 synced?/2</p>
+<h4 id="cohere-packet-service-surface-ce98880a2916">Cohere.Packet — service <code>[surface:ce98880a2916]</code></h4>
 <p>Assembles a work packet: context delivered, not discovered.</p>
-<p><strong>API</strong> (4): build/2 build_for_files/2 contexts_for_files/3 group_index/1</p>
-<h4 id="cohere-project-service-surface-7096a62da35a">Cohere.Project — service <code>[surface:7096a62da35a]</code></h4>
+<p><strong>API</strong> (5): build/2 build_for_files/2 contexts_for_files/3 group_index/1 guidance_paths/2</p>
+<h4 id="cohere-project-service-surface-50329f4db6fe">Cohere.Project — service <code>[surface:50329f4db6fe]</code></h4>
 <p>Discovers the host project: its OTP app, module inventory, namespaces, and which coherence-relevant capabilities are present.</p>
-<p><strong>API</strong> (7): design_dir/1 has?/2 intent_dir/1 load/0 load/1 map_path/1 source_index/1</p>
+<p><strong>API</strong> (8): changed_files/1 design_dir/1 has?/2 intent_dir/1 load/0 load/1 map_path/1 source_index/1</p>
 <h4 id="cohere-surface-service-surface-8ed33ba5b8aa">Cohere.Surface — service <code>[surface:8ed33ba5b8aa]</code></h4>
 <p>The public function surface of a module, and a stable hash over it.</p>
 <p><strong>API</strong> (4): from_line/1 functions/1 hash/1 to_line/1</p>

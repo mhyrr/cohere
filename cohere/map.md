@@ -23,31 +23,31 @@ The check verb: every finding cohere can make, in one iterative command — the 
 ### Derive — passive
 **Support:** Modules, Group, Routes, Route, Schemas, Schema, Workers, Worker
 
-### Cohere.Design — service `[surface:0d23bfc34d9d]`
+### Cohere.Design — service `[surface:c3bf3d14798e]`
 
 Design docs: the authored artifact of the feature loop.
 
-**API** (13): accept/2 anchored_to/3 filename/1 ground/2 issues/3 load_all/1 open_questions/1 parse/1 parse/2 promised_refs/1 skeleton/2 skeleton/3 unmet_promises/1
+**API** (14): accept/2 accept/3 anchored_to/3 filename/1 ground/2 issues/3 load_all/1 open_questions/1 parse/1 parse/2 promised_refs/1 skeleton/2 skeleton/3 unmet_promises/1
 **Support:** Doc
 
-### Cohere.Docs — service `[surface:1e30bfb36209]`
+### Cohere.Docs — service `[surface:80923c3ecdeb]`
 
 Renders the cohere docs site: authored markdown in `docs_src/` becomes static HTML in `docs/`, alongside pages derived from the compiled tasks and the repo's own coherence artifac…
 
-**API** (3): build/0 build/1 render_markdown/1
+**API** (4): build/0 build/1 gate_build/1 render_markdown/1
 
-### Cohere.Drift — service `[surface:33bec9f41f56]`
+### Cohere.Drift — service `[surface:4f4931c09525]`
 
 The drift sentinel: mechanically detects when the project has moved out from under its coherence artifacts.
 
-**API** (2): check/1 format/1
+**API** (3): check/1 derived_status/2 format/1
 **Support:** Report
 
-### Cohere.Intent — service `[surface:b68cc2992204]`
+### Cohere.Intent — service `[surface:b57e1a565df7]`
 
 Loads, parses, generates, and updates intent cards.
 
-**API** (7): accept_drift/3 filename/1 load_all/1 parse/1 parse/2 refs/2 skeleton/2
+**API** (8): accept_drift/3 accept_drift/4 filename/1 load_all/1 parse/1 parse/2 refs/2 skeleton/2
 **Support:** Card
 
 ### Cohere.Map — service `[surface:eddee810a03a]`
@@ -63,17 +63,23 @@ Frontmatter and section mechanics shared by every authored artifact — intent c
 
 **API** (6): append_to_section/3 code_refs/1 ref_exists?/1 replace_frontmatter/3 sections/1 split_frontmatter/1
 
+### Cohere.Onboarding — service `[surface:a950d1fd2f87]`
+
+Owns the cohere block in the host's agent guidance file (`AGENTS.md`).
+
+**API** (5): block/1 sync/1 sync/2 synced?/1 synced?/2
+
 ### Cohere.Packet — service `[surface:ce98880a2916]`
 
 Assembles a work packet: context delivered, not discovered.
 
 **API** (5): build/2 build_for_files/2 contexts_for_files/3 group_index/1 guidance_paths/2
 
-### Cohere.Project — service `[surface:7096a62da35a]`
+### Cohere.Project — service `[surface:50329f4db6fe]`
 
 Discovers the host project: its OTP app, module inventory, namespaces, and which coherence-relevant capabilities are present.
 
-**API** (7): design_dir/1 has?/2 intent_dir/1 load/0 load/1 map_path/1 source_index/1
+**API** (8): changed_files/1 design_dir/1 has?/2 intent_dir/1 load/0 load/1 map_path/1 source_index/1
 
 ### Cohere.Surface — service `[surface:8ed33ba5b8aa]`
 

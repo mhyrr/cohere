@@ -24,10 +24,17 @@ Levels: 1 static guidance, 2 derived map, 3 checked intent cards,
 *Sets up the coherence layer in this project*
 
 Creates the `cohere/` directory (map, `intent/`, `design/`), derives the
-first map, and writes a README explaining the feature loop and a CI
-snippet for the check gate.
+first map, writes a README explaining the feature loop, and syncs the
+agent-guidance block into `AGENTS.md` — the loop's instructions, landed
+where agents already look.
 
     $ mix cohere.init
+    $ mix cohere.init --into CLAUDE.md   # guidance file of choice
+
+Re-running is safe and is how the guidance block stays current across
+cohere upgrades: only the marker-bounded block is regenerated; the
+seeded working agreement and everything else in the file is never
+touched.
 
 Deliberately does *not* generate an intent card per context — empty cards
 are noise. Start with the two or three contexts where intent actually
@@ -43,12 +50,20 @@ The start verb of the feature loop — and, with no arguments, the listing.
 
     $ mix cohere.design                                    # list designs + statuses
     $ mix cohere.design deal-reversals --contexts deals,billing
+    $ mix cohere.design deal-reversals                     # contexts from the branch diff
+    $ mix cohere.design deal-reversals --base develop      # …diffed against a given ref
 
 Scaffolds `cohere/design/deal-reversals.md` (status: draft) and
 assembles its Existing ground: for each anchored context, the current
 API from the map plus the invariants and decisions from its intent
 card — the constraints the design should be shaped against, delivered
 onto the page where the designing happens.
+
+With `--contexts` omitted, the anchors are inferred from the branch
+diff, the way `mix cohere.packet --diff` maps changed files to the
+contexts that own them. Design-first stays the primary path — the flag
+is explicit intent; inference serves the retrofit, where the change is
+underway before anyone admits it deserved a design.
 
 Anchoring a context that doesn't exist yet is fine — the design may be
 the thing that introduces it; `mix cohere.complete` verifies it landed.
@@ -63,8 +78,9 @@ Iterate with `mix cohere.check`; land with `mix cohere.complete <slug>`.
 The check verb of the feature loop: run it anytime, locally or in CI;
 fix what it lists and run it again.
 
-    $ mix cohere.check                  # exit 1 on hard drift (the CI gate)
-    $ mix cohere.check --accept deals   # rebind the deals card after re-review
+    $ mix cohere.check                            # exit 1 on hard drift (the CI gate)
+    $ mix cohere.check --accept deals             # rebind the deals card after re-review
+    $ mix cohere.check --accept deals --by greg   # …recording who judged (default: git user.name)
 
 Hard findings fail the build: a stale map, an intent card whose context
 surface moved since review, a card referencing dead code. Design docs
@@ -134,8 +150,10 @@ empty rather than restating the code.
 
 *Assembles a work packet for the contexts a task touches*
 
-Prints a work packet — map slices, intent cards, related routes, and
-runtime-verification pointers — for the contexts a task touches.
+Prints a work packet — map slices, intent cards, anchored designs
+(drafts inlined as live intent, accepted as pointers), per-directory
+agent guidance, related routes, and runtime-verification pointers —
+for the contexts a task touches.
 
     $ mix cohere.packet deals billing        # contexts named explicitly
     $ mix cohere.packet --diff                # contexts touched by this branch

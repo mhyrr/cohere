@@ -90,7 +90,42 @@ defmodule Cohere.IntentTest do
     assert card.reviewed == "2026-07-02"
     assert card.sections["Accepted drift"] =~ "2026-07-02: surface changed"
     assert card.sections["Accepted drift"] =~ "−removed_fun/2"
+    # no attribution given → the plain form, no dangling parens
+    refute card.sections["Accepted drift"] =~ "accepted ("
     # untouched sections survive
     assert card.sections["Purpose"] == "Own the account lifecycle."
+
+    attributed = Intent.accept_drift(stale, group, ~D[2026-07-02], by: "maya")
+    {:ok, card} = Intent.parse(attributed)
+    assert card.sections["Accepted drift"] =~ "— accepted (maya)"
+  end
+
+  test "annotation lands in the section even when prose mentions the heading", %{
+    accounts: group
+  } do
+    # Regression: INV-DRI-003's own wording contains the literal string
+    # "## Accepted drift"; the unanchored matcher swallowed an annotation
+    # into the Invariants section (found 2026-07-09, dogfooding).
+    stale = """
+    ---
+    context: Fixture.Accounts
+    reviewed: 2026-01-01
+    surface: 000000000000
+    functions: create_user/1
+    ---
+
+    # Accounts — Intent
+
+    ## Invariants
+
+    - INV-ACC-001: traces go in the card's `## Accepted drift` section.
+
+    ## Accepted drift
+    """
+
+    {:ok, card} = stale |> Intent.accept_drift(group, ~D[2026-07-09]) |> Intent.parse()
+
+    assert card.sections["Accepted drift"] =~ "2026-07-09: surface changed"
+    refute card.sections["Invariants"] =~ "surface changed"
   end
 end

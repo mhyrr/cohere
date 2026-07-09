@@ -64,23 +64,27 @@ defmodule Cohere.Markdown do
   @doc "Appends a line to the named `## ` section, creating the section at the end if absent."
   def append_to_section(text, section, line) do
     heading = "## #{section}"
+    # Anchored to line starts: prose mentioning "## Accepted drift" in
+    # backticks must not count as the heading (found when INV-DRI-003's
+    # own wording swallowed an annotation).
+    heading_re = ~r/^#{Regex.escape(heading)}[ \t]*$/m
 
-    if String.contains?(text, heading) do
-      # Insert after the heading block, before the next heading (or at end).
-      [before, rest] = String.split(text, heading, parts: 2)
+    case Regex.split(heading_re, text, parts: 2) do
+      [before, rest] ->
+        # Insert after the heading block, before the next heading (or at end).
+        case String.split(rest, ~r/^## /m, parts: 2) do
+          [section_body, next] ->
+            before <>
+              heading <>
+              String.trim_trailing(section_body) <>
+              "\n#{line}\n\n## " <> next
 
-      case String.split(rest, ~r/^## /m, parts: 2) do
-        [section_body, next] ->
-          before <>
-            heading <>
-            String.trim_trailing(section_body) <>
-            "\n#{line}\n\n## " <> next
+          [section_body] ->
+            before <> heading <> String.trim_trailing(section_body) <> "\n#{line}\n"
+        end
 
-        [section_body] ->
-          before <> heading <> String.trim_trailing(section_body) <> "\n#{line}\n"
-      end
-    else
-      String.trim_trailing(text) <> "\n\n#{heading}\n\n#{line}\n"
+      [_no_heading] ->
+        String.trim_trailing(text) <> "\n\n#{heading}\n\n#{line}\n"
     end
   end
 

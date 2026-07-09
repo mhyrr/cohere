@@ -197,4 +197,12 @@ defmodule Cohere.DocsTest do
     Docs.build(src: src, out: out, base_url: "https://example.test/cohere")
     assert File.read!(Path.join(out, "index.html")) == first
   end
+
+  test "gate_build is the canonical render: real sources, canonical base_url", %{tmp_dir: tmp} do
+    out = Path.join(tmp, "site")
+    Docs.gate_build(out)
+
+    assert File.read!(Path.join(out, "llms.txt")) =~ "https://mhyrr.github.io/cohere/"
+    assert File.exists?(Path.join(out, "index.html"))
+  end
 end

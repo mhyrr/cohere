@@ -3,7 +3,7 @@ defmodule Cohere.Drift do
   The drift sentinel: mechanically detects when the project has moved out
   from under its coherence artifacts.
 
-  Three checks, all deterministic:
+  Four checks, all deterministic:
 
     1. **Stale map** — the committed `cohere/map.md` no longer matches a
        fresh derivation. The code changed shape; the map needs regenerating.
@@ -13,6 +13,10 @@ defmodule Cohere.Drift do
        annotation.
     3. **Broken references** — a card mentions `MyApp.Module` or
        `MyApp.Module.fun/1` that no longer exists.
+    4. **Stale derived artifacts** — a registered generated-and-committed
+       output (`config :cohere, derived: [...]`) no longer matches a fresh
+       render. The map generalized: same severity, same byte-compare
+       (DEC-DER-001 in `cohere/design/derived-artifacts.md`).
 
   Accepted drift is documented drift; silent drift is the failure mode.
   """
@@ -25,14 +29,18 @@ defmodule Cohere.Drift do
     defstruct map_status: :missing,
               map_diff: [],
               cards: [],
-              uncarded: []
+              uncarded: [],
+              derived: []
 
     def clean?(%__MODULE__{} = report) do
-      report.map_status == :fresh and Enum.all?(report.cards, &(&1.issues == []))
+      report.map_status == :fresh and
+        Enum.all?(report.cards, &(&1.issues == [])) and
+        Enum.all?(report.derived, &(&1.status == :fresh))
     end
   end
 
   @max_diff_lines 40
+  @max_delta_entries 20
 
   @doc "Runs all drift checks. Returns a `%Report{}`."
   @spec check(Project.t()) :: Report.t()
@@ -45,9 +53,97 @@ defmodule Cohere.Drift do
       map_status: map_status(project, fresh),
       map_diff: map_diff(project, fresh),
       cards: Enum.map(cards, &card_status(&1, map, project)),
-      uncarded: uncarded(map, cards)
+      uncarded: uncarded(map, cards),
+      derived: Enum.map(project.derived, &derived_status(project, &1))
     }
   end
+
+  @doc """
+  Freshness of one registered derived artifact: renders it into a scratch
+  directory under the build path (never the working tree) and
+  byte-compares the tree against the committed `path`.
+
+  The registration is `{name, path, {module, function}, fix}` where
+  `function(out_dir)` renders the artifact as it would appear at `path`,
+  and `fix` is the command the finding prints. Returns
+  `%{name, path, status: :fresh | :stale | :missing, delta, more, fix}`
+  with a bounded file-level delta (DEC-DER-004: which files differ,
+  appear, or vanish — the fixing command is the payload).
+  """
+  @spec derived_status(Project.t(), {String.t(), String.t(), {module(), atom()}, String.t()}) ::
+          map()
+  def derived_status(%Project{}, {name, path, {mod, fun}, fix}) do
+    scratch = Path.join([Mix.Project.build_path(), "cohere_derived", slugify(name)])
+    File.rm_rf!(scratch)
+    File.mkdir_p!(scratch)
+    apply(mod, fun, [scratch])
+
+    delta = tree_delta(path, scratch)
+
+    status =
+      cond do
+        not File.exists?(path) -> :missing
+        delta == [] -> :fresh
+        true -> :stale
+      end
+
+    %{
+      name: name,
+      path: path,
+      status: status,
+      delta: Enum.take(delta, @max_delta_entries),
+      more: max(0, length(delta) - @max_delta_entries),
+      fix: fix
+    }
+  end
+
+  def derived_status(%Project{}, other) do
+    raise ArgumentError,
+          "malformed derived-artifact registration: #{inspect(other)} — expected " <>
+            "{name, path, {module, function}, fix} per cohere/design/derived-artifacts.md"
+  end
+
+  # A registered path is a directory (compare trees) or a single file
+  # (compare it against its basename in the scratch render).
+  defp tree_delta(committed_root, fresh_root) do
+    if File.regular?(committed_root) do
+      rel = Path.basename(committed_root)
+      fresh_file = Path.join(fresh_root, rel)
+
+      cond do
+        not File.exists?(fresh_file) -> [{:vanishes, rel}]
+        File.read!(committed_root) != File.read!(fresh_file) -> [{:differs, rel}]
+        true -> []
+      end
+    else
+      committed = tree_files(committed_root)
+      fresh = tree_files(fresh_root)
+
+      differs =
+        for rel <- MapSet.intersection(committed, fresh),
+            File.read!(Path.join(committed_root, rel)) != File.read!(Path.join(fresh_root, rel)),
+            do: {:differs, rel}
+
+      vanishes = for rel <- MapSet.difference(committed, fresh), do: {:vanishes, rel}
+      appears = for rel <- MapSet.difference(fresh, committed), do: {:appears, rel}
+
+      Enum.sort_by(differs ++ vanishes ++ appears, &elem(&1, 1))
+    end
+  end
+
+  defp tree_files(root) do
+    if File.dir?(root) do
+      root
+      |> Path.join("**")
+      |> Path.wildcard(match_dot: true)
+      |> Enum.filter(&File.regular?/1)
+      |> MapSet.new(&Path.relative_to(&1, root))
+    else
+      MapSet.new()
+    end
+  end
+
+  defp slugify(name), do: String.replace(name, ~r/[^A-Za-z0-9]+/, "-")
 
   @doc """
   Formats a report's findings for terminal/CI output. No verdict line —
@@ -57,6 +153,7 @@ defmodule Cohere.Drift do
   def format(%Report{} = report) do
     [
       map_section(report),
+      Enum.map(report.derived, &derived_section/1),
       Enum.map(report.cards, &card_section/1),
       uncarded_section(report)
     ]
@@ -155,6 +252,31 @@ defmodule Cohere.Drift do
 
     "✗ map is stale — run `mix cohere.map` and commit the diff\n" <>
       Enum.map_join(diff, "\n", &("  " <> &1)) <> truncated
+  end
+
+  defp derived_section(%{status: :fresh} = artifact) do
+    "✓ #{artifact.name} (#{artifact.path}) — fresh"
+  end
+
+  defp derived_section(%{status: :missing} = artifact) do
+    "✗ #{artifact.name} — #{artifact.path} is missing\n  → #{artifact.fix}, then commit"
+  end
+
+  defp derived_section(%{status: :stale} = artifact) do
+    delta_lines =
+      Enum.map(artifact.delta, fn
+        {:differs, rel} -> "  ~ #{rel}"
+        {:appears, rel} -> "  + #{rel} (appears on rebuild)"
+        {:vanishes, rel} -> "  − #{rel} (vanishes on rebuild)"
+      end)
+
+    more = if artifact.more > 0, do: ["  … and #{artifact.more} more file(s)"], else: []
+
+    Enum.join(
+      ["✗ #{artifact.name} (#{artifact.path}) — stale" | delta_lines] ++
+        more ++ ["  → #{artifact.fix}, then commit the diff"],
+      "\n"
+    )
   end
 
   defp card_section(%{issues: []} = status) do

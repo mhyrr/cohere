@@ -26,6 +26,76 @@ defmodule Cohere.DriftTest do
     refute Drift.Report.clean?(report)
   end
 
+  describe "derived artifacts" do
+    defp registration(tmp) do
+      {"fake site", Path.join(tmp, "site"), {Cohere.Fixtures.FakeArtifact, :render},
+       "mix run fake/build.exs"}
+    end
+
+    defp commit_fresh!(tmp) do
+      Cohere.Fixtures.FakeArtifact.render(Path.join(tmp, "site"))
+    end
+
+    test "fresh when committed tree matches the render byte-for-byte", %{tmp_dir: tmp} do
+      commit_fresh!(tmp)
+      project = Cohere.Fixtures.project(dir: tmp, derived: [registration(tmp)])
+
+      assert %{status: :fresh, delta: []} = Drift.derived_status(project, registration(tmp))
+    end
+
+    test "stale with a file-level delta, and it fails the gate", %{
+      tmp_dir: tmp,
+      map: map
+    } do
+      commit_fresh!(tmp)
+      site = Path.join(tmp, "site")
+      File.write!(Path.join(site, "page.md"), "content v1\n")
+      File.write!(Path.join(site, "extra.html"), "hand-added\n")
+      File.rm!(Path.join(site, "sub/nested.txt"))
+
+      project = Cohere.Fixtures.project(dir: tmp, derived: [registration(tmp)])
+      write_map!(project, Renderer.render(map))
+
+      report = Drift.check(project)
+      refute Drift.Report.clean?(report)
+
+      assert [%{status: :stale, delta: delta, fix: "mix run fake/build.exs"}] = report.derived
+      assert {:differs, "page.md"} in delta
+      assert {:vanishes, "extra.html"} in delta
+      assert {:appears, "sub/nested.txt"} in delta
+
+      formatted = Drift.format(report)
+      assert formatted =~ "✗ fake site"
+      assert formatted =~ "→ mix run fake/build.exs, then commit the diff"
+    end
+
+    test "missing committed path is its own status", %{tmp_dir: tmp} do
+      project = Cohere.Fixtures.project(dir: tmp)
+      assert %{status: :missing} = Drift.derived_status(project, registration(tmp))
+    end
+
+    test "single-file artifacts compare against their basename", %{tmp_dir: tmp} do
+      file = Path.join(tmp, "page.md")
+      reg = {"one file", file, {Cohere.Fixtures.FakeArtifact, :render}, "rebuild"}
+      project = Cohere.Fixtures.project(dir: tmp)
+
+      File.write!(file, "content v2\n")
+      assert %{status: :fresh} = Drift.derived_status(project, reg)
+
+      File.write!(file, "content v1\n")
+      assert %{status: :stale, delta: [{:differs, "page.md"}]} =
+               Drift.derived_status(project, reg)
+    end
+
+    test "malformed registration raises with the expected shape", %{tmp_dir: tmp} do
+      project = Cohere.Fixtures.project(dir: tmp)
+
+      assert_raise ArgumentError, ~r/malformed derived-artifact registration/, fn ->
+        Drift.derived_status(project, {"bad", "path"})
+      end
+    end
+  end
+
   test "fresh map and in-sync card is clean", %{project: project, map: map, accounts: accounts} do
     write_map!(project, Renderer.render(map))
     write_card!(project, "accounts.md", Intent.skeleton(accounts, ~D[2026-07-02]))

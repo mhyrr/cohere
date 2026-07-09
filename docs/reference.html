@@ -40,10 +40,16 @@ requires.</p>
 <h2 id="mix-cohere-init">mix cohere.init</h2>
 <p><em>Sets up the coherence layer in this project</em></p>
 <p>Creates the <code>cohere/</code> directory (map, <code>intent/</code>, <code>design/</code>), derives the
-first map, and writes a README explaining the feature loop and a CI
-snippet for the check gate.</p>
+first map, writes a README explaining the feature loop, and syncs the
+agent-guidance block into <code>AGENTS.md</code> — the loop's instructions, landed
+where agents already look.</p>
 <pre><code>$ mix cohere.init
+$ mix cohere.init --into CLAUDE.md   # guidance file of choice
 </code></pre>
+<p>Re-running is safe and is how the guidance block stays current across
+cohere upgrades: only the marker-bounded block is regenerated; the
+seeded working agreement and everything else in the file is never
+touched.</p>
 <p>Deliberately does <em>not</em> generate an intent card per context — empty cards
 are noise. Start with the two or three contexts where intent actually
 accumulates (<code>mix cohere.gen.intent &lt;context&gt;</code>); add more when a context
@@ -53,12 +59,19 @@ earns one.</p>
 <p>The start verb of the feature loop — and, with no arguments, the listing.</p>
 <pre><code>$ mix cohere.design                                    # list designs + statuses
 $ mix cohere.design deal-reversals --contexts deals,billing
+$ mix cohere.design deal-reversals                     # contexts from the branch diff
+$ mix cohere.design deal-reversals --base develop      # …diffed against a given ref
 </code></pre>
 <p>Scaffolds <code>cohere/design/deal-reversals.md</code> (status: draft) and
 assembles its Existing ground: for each anchored context, the current
 API from the map plus the invariants and decisions from its intent
 card — the constraints the design should be shaped against, delivered
 onto the page where the designing happens.</p>
+<p>With <code>--contexts</code> omitted, the anchors are inferred from the branch
+diff, the way <code>mix cohere.packet --diff</code> maps changed files to the
+contexts that own them. Design-first stays the primary path — the flag
+is explicit intent; inference serves the retrofit, where the change is
+underway before anyone admits it deserved a design.</p>
 <p>Anchoring a context that doesn't exist yet is fine — the design may be
 the thing that introduces it; <code>mix cohere.complete</code> verifies it landed.</p>
 <p>Iterate with <code>mix cohere.check</code>; land with <code>mix cohere.complete &lt;slug&gt;</code>.</p>
@@ -66,8 +79,9 @@ the thing that introduces it; <code>mix cohere.complete</code> verifies it lande
 <p><em>Checks coherence — map, cards, and designs in one pass</em></p>
 <p>The check verb of the feature loop: run it anytime, locally or in CI;
 fix what it lists and run it again.</p>
-<pre><code>$ mix cohere.check                  # exit 1 on hard drift (the CI gate)
-$ mix cohere.check --accept deals   # rebind the deals card after re-review
+<pre><code>$ mix cohere.check                            # exit 1 on hard drift (the CI gate)
+$ mix cohere.check --accept deals             # rebind the deals card after re-review
+$ mix cohere.check --accept deals --by greg   # …recording who judged (default: git user.name)
 </code></pre>
 <p>Hard findings fail the build: a stale map, an intent card whose context
 surface moved since review, a card referencing dead code. Design docs
@@ -117,8 +131,10 @@ decisions, non-goals. If a section has nothing durable to say, leave it
 empty rather than restating the code.</p>
 <h2 id="mix-cohere-packet">mix cohere.packet</h2>
 <p><em>Assembles a work packet for the contexts a task touches</em></p>
-<p>Prints a work packet — map slices, intent cards, related routes, and
-runtime-verification pointers — for the contexts a task touches.</p>
+<p>Prints a work packet — map slices, intent cards, anchored designs
+(drafts inlined as live intent, accepted as pointers), per-directory
+agent guidance, related routes, and runtime-verification pointers —
+for the contexts a task touches.</p>
 <pre><code>$ mix cohere.packet deals billing        # contexts named explicitly
 $ mix cohere.packet --diff                # contexts touched by this branch
 $ mix cohere.packet --diff --base develop # …diffed against a given ref

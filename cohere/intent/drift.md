@@ -1,8 +1,8 @@
 ---
 context: Cohere.Drift
-reviewed: 2026-07-02
-surface: 33bec9f41f56
-functions: check/1 format/1
+reviewed: 2026-07-09
+surface: 4f4931c09525
+functions: check/1 derived_status/2 format/1
 ---
 
 # Drift — Intent
@@ -12,8 +12,10 @@ functions: check/1 format/1
 The mechanism that keeps the authored layer honest. Detects, mechanically
 and deterministically, when the project has moved out from under its
 coherence artifacts: a stale map, a card whose context surface changed
-since review, a card referencing dead code. This is the piece that
-separates the coherence layer from "we added more markdown."
+since review, a card referencing dead code, a registered derived
+artifact whose committed bytes no longer match a fresh render. This is
+the piece that separates the coherence layer from "we added more
+markdown."
 
 ## Invariants
 
@@ -40,6 +42,16 @@ separates the coherence layer from "we added more markdown."
   committed file and a fresh render, reported as a bounded Myers line
   diff. Rejected: semantic diffing — the render is already deterministic,
   so bytes are the semantics.
+- DEC-DRI-004 (2026-07-09): DEC-DRI-003 generalized to any registered
+  derived artifact (`config :cohere, derived:` —
+  `{name, path, {module, function}, fix}`; `function(out_dir)` renders
+  into a scratch dir under the build path, never the working tree).
+  Hard finding, gated in `mix cohere.check`, not bespoke CI steps —
+  supersedes the venue half of DEC-DOC-001. Delta is file-level
+  (differs/appears/vanishes, bounded), not line-level: the map's Myers
+  diff earns its cost on one small file, a site of dozens does not; the
+  fixing command is the payload. (Full record: DEC-DER-001..004 in
+  `cohere/design/derived-artifacts.md`.)
 
 ## Non-goals
 
@@ -54,3 +66,4 @@ separates the coherence layer from "we added more markdown."
   canonical ordering of the fix workflow?
 
 ## Accepted drift
+- 2026-07-09: surface changed (+derived_status/2) — accepted (maya)
