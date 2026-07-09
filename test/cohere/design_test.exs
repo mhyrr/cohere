@@ -140,6 +140,12 @@ defmodule Cohere.DesignTest do
     assert doc.date == "2026-07-01"
     assert doc.contexts == ["Accounts"]
     assert doc.sections["Status log"] =~ "2026-07-03: accepted"
+    refute doc.sections["Status log"] =~ "accepted ("
+
+    {:ok, doc} =
+      text |> Design.accept(~D[2026-07-03], by: "greg") |> Design.parse()
+
+    assert doc.sections["Status log"] =~ "accepted (greg) — promised surface verified"
   end
 
   test "issues: missing anchors and dead body refs warn; promised refs are exempt", %{

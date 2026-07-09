@@ -25,6 +25,24 @@ defmodule Cohere.CheckTest do
     File.write!(Path.join(dir, Design.filename(slug)), contents)
   end
 
+  test "missing onboarding is a soft finding that names its fix", %{
+    project: project,
+    map: map,
+    accounts: accounts
+  } do
+    make_coherent!(project, map, accounts)
+    report = Check.check(project)
+
+    # Soft by construction (DEC-AGE-003): onboarding never affects clean?.
+    assert Check.Report.clean?(%{report | onboarded: false})
+
+    formatted = Check.format(%{report | onboarded: false})
+    assert formatted =~ "agents can't find the loop"
+    assert formatted =~ "mix cohere.init"
+
+    refute Check.format(%{report | onboarded: true}) =~ "agents can't find the loop"
+  end
+
   test "design advisories never fail the build", %{
     project: project,
     map: map,

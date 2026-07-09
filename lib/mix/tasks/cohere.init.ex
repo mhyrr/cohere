@@ -3,10 +3,17 @@ defmodule Mix.Tasks.Cohere.Init do
 
   @moduledoc """
   Creates the `cohere/` directory (map, `intent/`, `design/`), derives the
-  first map, and writes a README explaining the feature loop and a CI
-  snippet for the check gate.
+  first map, writes a README explaining the feature loop, and syncs the
+  agent-guidance block into `AGENTS.md` — the loop's instructions, landed
+  where agents already look.
 
       $ mix cohere.init
+      $ mix cohere.init --into CLAUDE.md   # guidance file of choice
+
+  Re-running is safe and is how the guidance block stays current across
+  cohere upgrades: only the marker-bounded block is regenerated; the
+  seeded working agreement and everything else in the file is never
+  touched.
 
   Deliberately does *not* generate an intent card per context — empty cards
   are noise. Start with the two or three contexts where intent actually
@@ -16,12 +23,13 @@ defmodule Mix.Tasks.Cohere.Init do
 
   use Mix.Task
 
-  alias Cohere.{Map, Project}
+  alias Cohere.{Map, Onboarding, Project}
 
   @requirements ["app.config"]
 
   @impl Mix.Task
-  def run(_args) do
+  def run(args) do
+    {opts, _rest} = OptionParser.parse!(args, strict: [into: :string])
     project = Project.load()
     map = Map.build(project)
 
@@ -36,6 +44,14 @@ defmodule Mix.Tasks.Cohere.Init do
     end
 
     Mix.Task.run("cohere.map")
+
+    target = opts[:into] || "AGENTS.md"
+
+    case Onboarding.sync(project, target) do
+      :created -> Mix.shell().info("created #{target} (cohere block + working agreement)")
+      :updated -> Mix.shell().info("updated #{target} (cohere block; rest untouched)")
+      :unchanged -> Mix.shell().info("#{target} — cohere block already current")
+    end
 
     suggestions =
       map.groups

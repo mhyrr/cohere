@@ -11,11 +11,11 @@ defmodule Cohere.Check do
   history is information; drift on intent is a bug.
   """
 
-  alias Cohere.{Design, Drift, Map, Project}
+  alias Cohere.{Design, Drift, Map, Onboarding, Project}
 
   defmodule Report do
     @moduledoc false
-    defstruct drift: nil, designs: []
+    defstruct drift: nil, designs: [], onboarded: true
 
     def clean?(%__MODULE__{drift: drift}), do: Drift.Report.clean?(drift)
   end
@@ -30,7 +30,11 @@ defmodule Cohere.Check do
       |> Design.load_all()
       |> Enum.map(&%{doc: &1, issues: Design.issues(&1, map, project)})
 
-    %Report{drift: Drift.check(project), designs: designs}
+    %Report{
+      drift: Drift.check(project),
+      designs: designs,
+      onboarded: Onboarding.synced?(project)
+    }
   end
 
   @doc "Formats the combined report for terminal/CI output."
@@ -38,10 +42,20 @@ defmodule Cohere.Check do
     [
       Drift.format(report.drift),
       designs_section(report.designs),
+      onboarding_line(report),
       verdict(report)
     ]
     |> Enum.reject(&is_nil/1)
     |> Enum.join("\n")
+  end
+
+  # Soft by design (DEC-AGE-003): a project that chose not to onboard
+  # hasn't drifted from anything it authored.
+  defp onboarding_line(%Report{onboarded: true}), do: nil
+
+  defp onboarding_line(%Report{onboarded: false}) do
+    "ℹ no agent guidance carries the cohere block — agents can't find " <>
+      "the loop; run `mix cohere.init`"
   end
 
   defp designs_section([]), do: nil

@@ -211,7 +211,7 @@ defmodule Cohere.Design do
   The `date:` frontmatter keeps the design date; the log carries the
   acceptance date.
   """
-  def accept(text, date) do
+  def accept(text, date, opts \\ []) do
     {:ok, front, _body} = Markdown.split_frontmatter(text)
 
     text
@@ -221,9 +221,12 @@ defmodule Cohere.Design do
     )
     |> Markdown.append_to_section(
       "Status log",
-      "- #{date}: accepted — promised surface verified"
+      "- #{date}: accepted#{attribution(opts[:by])} — promised surface verified"
     )
   end
+
+  defp attribution(nil), do: ""
+  defp attribution(by), do: " (#{by})"
 
   @doc """
   Soft findings for a design doc — never build-failing (DEC-FEA-002):

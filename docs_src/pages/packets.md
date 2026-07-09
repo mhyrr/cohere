@@ -19,10 +19,18 @@ $ mix cohere.packet --diff               # ...or for exactly the
 
 For each requested context: its map entry (the real API, schemas,
 routes, workers), its intent card (the invariants the work must not
-violate, the decisions already made, with what was rejected), and
-pointers to the source files that own it. With `--diff`, cohere reads
-the branch's changed files and works out the touched contexts itself:
-the packet for the work actually in flight.
+violate, the decisions already made, with what was rejected), any
+agent guidance living next to the context's source (`AGENTS.md` /
+`CLAUDE.md`, inlined because packets travel to places that never
+auto-load them), and pointers to the source files that own it. With
+`--diff`, cohere reads the branch's changed files and works out the
+touched contexts itself: the packet for the work actually in flight.
+
+Designs anchored to the packet's contexts come along too, by status.
+Drafts lead the packet — a draft is someone mid-change on this ground,
+the one thing map and cards cannot tell you — while accepted designs
+appear as one-line pointers, because their durable content already
+lives in the cards.
 
 ## Link, don't restate
 

@@ -1,8 +1,8 @@
 ---
 context: Cohere.Design
-reviewed: 2026-07-08
-surface: 0d23bfc34d9d
-functions: accept/2 anchored_to/3 filename/1 ground/2 issues/3 load_all/1 open_questions/1 parse/1 parse/2 promised_refs/1 skeleton/2 skeleton/3 unmet_promises/1
+reviewed: 2026-07-09
+surface: c3bf3d14798e
+functions: accept/2 accept/3 anchored_to/3 filename/1 ground/2 issues/3 load_all/1 open_questions/1 parse/1 parse/2 promised_refs/1 skeleton/2 skeleton/3 unmet_promises/1
 ---
 
 # Design — Intent
@@ -27,10 +27,10 @@ performs the one status transition the lifecycle allows.
 - INV-DES-003: refs inside HTML comments never count, anywhere — a
   skeleton example is not a claim. (Found the hard way: the template's
   own example blocked completion of every fresh design.)
-- INV-DES-004: accepted designs are immutable history. `accept/2` is the
+- INV-DES-004: accepted designs are immutable history. `accept/3` is the
   only status transition this module performs (draft → accepted, dated
-  in the Status log); supersession is a *new* doc naming the old slug in
-  `supersedes:`, never an edit.
+  and attributed in the Status log); supersession is a *new* doc naming
+  the old slug in `supersedes:`, never an edit.
 
 ## Decisions
 
@@ -53,6 +53,13 @@ performs the one status transition the lifecycle allows.
   superseding doc carries the thread (DEC-PAC-003 in
   `cohere/design/packet-sources.md`). Rejected: a second matcher inside
   `Cohere.Packet` — two resolutions drift apart.
+- DEC-DES-005 (2026-07-09): `mix cohere.design <slug>` without
+  `--contexts` infers anchors from the branch diff via
+  `Cohere.Packet.contexts_for_files/3` — resolving this card's open
+  question, yes (DEC-AGE-005 in `cohere/design/agent-surfaces.md`).
+  Design-first stays primary; inference serves the retrofit. Rejected:
+  requiring the flag always — agents mid-branch already know the answer
+  mechanically.
 
 ## Non-goals
 
@@ -64,8 +71,6 @@ performs the one status transition the lifecycle allows.
 
 ## Open questions
 
-- Should `mix cohere.design` infer `--contexts` from the branch diff when
-  omitted, the way `mix cohere.packet --diff` does?
-
 ## Accepted drift
 - 2026-07-08: surface changed (+anchored_to/3) — accepted
+- 2026-07-09: surface changed (+accept/3) — accepted (maya)

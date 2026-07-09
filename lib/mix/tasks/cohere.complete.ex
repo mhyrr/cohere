@@ -30,10 +30,12 @@ defmodule Mix.Tasks.Cohere.Complete do
 
   @impl Mix.Task
   def run(args) do
+    {opts, argv} = OptionParser.parse!(args, strict: [by: :string])
+
     slug =
-      case args do
+      case argv do
         [slug] -> slug
-        _ -> Mix.raise("usage: mix cohere.complete <slug>")
+        _ -> Mix.raise("usage: mix cohere.complete <slug> [--by NAME]")
       end
 
     project = Project.load()
@@ -58,7 +60,8 @@ defmodule Mix.Tasks.Cohere.Complete do
     case blockers do
       [] ->
         warn_open_questions(doc)
-        File.write!(path, Design.accept(File.read!(path), Date.utc_today()))
+        by = opts[:by] || git_user()
+        File.write!(path, Design.accept(File.read!(path), Date.utc_today(), by: by))
 
         Mix.shell().info(
           "#{path} — accepted. The promised surface is live; the design's durable\n" <>
@@ -72,6 +75,17 @@ defmodule Mix.Tasks.Cohere.Complete do
 
         exit({:shutdown, 1})
     end
+  end
+
+  # Same default as `mix cohere.check --accept`: the configured git
+  # identity names who judged (DEC-AGE-004); absent, the plain form.
+  defp git_user do
+    case System.cmd("git", ["config", "user.name"], stderr_to_stdout: true) do
+      {out, 0} -> with "" <- String.trim(out), do: nil
+      _ -> nil
+    end
+  rescue
+    ErlangError -> nil
   end
 
   defp drift_blockers(project) do

@@ -97,9 +97,11 @@ defmodule Cohere.Intent do
 
   @doc """
   Rebinds a card's frontmatter to a new surface and appends an accepted-drift
-  annotation. Returns the updated card text.
+  annotation. `opts[:by]` names who judged, in the annotation — attribution
+  lives in event traces only, never frontmatter (DEC-AGE-004 in
+  `cohere/design/agent-surfaces.md`). Returns the updated card text.
   """
-  def accept_drift(text, group, date) do
+  def accept_drift(text, group, date, opts \\ []) do
     {:ok, card} = parse(text)
 
     added = group.functions -- card.functions
@@ -109,7 +111,9 @@ defmodule Cohere.Intent do
       Enum.map_join(added, " ", fn {f, a} -> "+#{f}/#{a}" end) <>
         " " <> Enum.map_join(removed, " ", fn {f, a} -> "−#{f}/#{a}" end)
 
-    annotation = "- #{date}: surface changed (#{String.trim(delta)}) — accepted"
+    annotation =
+      "- #{date}: surface changed (#{String.trim(delta)}) — " <>
+        "accepted#{attribution(opts[:by])}"
 
     text
     |> Markdown.replace_frontmatter(~w(context reviewed surface functions), %{
@@ -120,6 +124,9 @@ defmodule Cohere.Intent do
     })
     |> Markdown.append_to_section("Accepted drift", annotation)
   end
+
+  defp attribution(nil), do: ""
+  defp attribution(by), do: " (#{by})"
 
   @doc "Conventional card filename for a context group."
   def filename(group), do: Macro.underscore(group.name) <> ".md"

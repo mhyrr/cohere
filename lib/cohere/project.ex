@@ -14,7 +14,11 @@ defmodule Cohere.Project do
             web_namespace: nil,
             modules: [],
             capabilities: %{},
-            dir: "cohere"
+            dir: "cohere",
+            derived: []
+
+  @type derived_registration ::
+          {name :: String.t(), path :: String.t(), {module(), atom()}, fix :: String.t()}
 
   @type t :: %__MODULE__{
           app: atom(),
@@ -22,7 +26,8 @@ defmodule Cohere.Project do
           web_namespace: module() | nil,
           modules: [module()],
           capabilities: %{atom() => String.t() | nil},
-          dir: String.t()
+          dir: String.t(),
+          derived: [derived_registration()]
         }
 
   # Capability => marker module. Presence of the module in the load path is
@@ -69,7 +74,8 @@ defmodule Cohere.Project do
       web_namespace: web_namespace,
       modules: Enum.sort(modules -- ignore),
       capabilities: detect_capabilities(),
-      dir: opts[:dir] || config(:dir) || "cohere"
+      dir: opts[:dir] || config(:dir) || "cohere",
+      derived: opts[:derived] || config(:derived) || []
     }
   end
 
@@ -106,6 +112,33 @@ defmodule Cohere.Project do
       end
     end)
   end
+
+  @doc """
+  Files changed on this branch relative to `base` — the merge base's diff
+  plus untracked source. Plumbing only, never porcelain, so it is stable
+  across git versions. Shared by `mix cohere.packet --diff` and
+  `mix cohere.design` context inference; never called from check paths,
+  which stay git-free (INV-DRI-001).
+
+  Returns `{:ok, files}` or `{:error, message}`.
+  """
+  @spec changed_files(String.t()) :: {:ok, [String.t()]} | {:error, String.t()}
+  def changed_files(base) do
+    with {:ok, merge_base} <- git(["merge-base", "HEAD", base]),
+         {:ok, tracked} <- git(["diff", "--name-only", String.trim(merge_base)]),
+         {:ok, untracked} <- git(["ls-files", "--others", "--exclude-standard"]) do
+      {:ok, Enum.uniq(lines(tracked) ++ lines(untracked))}
+    end
+  end
+
+  defp git(args) do
+    case System.cmd("git", args, stderr_to_stdout: true) do
+      {out, 0} -> {:ok, out}
+      {out, code} -> {:error, "git #{Enum.join(args, " ")} exited #{code}: #{String.trim(out)}"}
+    end
+  end
+
+  defp lines(out), do: String.split(out, "\n", trim: true)
 
   defp source_file(module, root) do
     with true <- Code.ensure_loaded?(module),

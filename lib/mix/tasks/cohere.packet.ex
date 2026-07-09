@@ -62,7 +62,14 @@ defmodule Mix.Tasks.Cohere.Packet do
       Mix.shell().info("note: --diff ignores positional contexts (#{Enum.join(names, ", ")})")
     end
 
-    files = changed_files(opts[:base] || "main")
+    files =
+      case Project.changed_files(opts[:base] || "main") do
+        {:ok, files} ->
+          files
+
+        {:error, message} ->
+          Mix.raise(message <> " — pass --base <ref> with a branch that shares history")
+      end
 
     case Packet.build_for_files(project, files) do
       {:ok, packet, report} ->
@@ -83,33 +90,4 @@ defmodule Mix.Tasks.Cohere.Packet do
 
   defp emit(packet, nil), do: Mix.shell().info(packet)
   defp emit(packet, path), do: File.write!(path, packet) && Mix.shell().info("wrote #{path}")
-
-  # Changed files on this branch: everything that moved since the merge base
-  # with `base` (committed or not), plus new untracked source. Plumbing only,
-  # never porcelain — stable across git versions and safe to script.
-  defp changed_files(base) do
-    merge_base =
-      case System.cmd("git", ["merge-base", "HEAD", base], stderr_to_stdout: true) do
-        {out, 0} ->
-          String.trim(out)
-
-        {out, _} ->
-          Mix.raise(
-            "could not find a merge base with `#{base}` (git: #{String.trim(out)}). " <>
-              "Pass --base <ref> with a branch that shares history."
-          )
-      end
-
-    tracked = git_lines(["diff", "--name-only", merge_base])
-    untracked = git_lines(["ls-files", "--others", "--exclude-standard"])
-
-    Enum.uniq(tracked ++ untracked)
-  end
-
-  defp git_lines(args) do
-    case System.cmd("git", args, stderr_to_stdout: true) do
-      {out, 0} -> String.split(out, "\n", trim: true)
-      {out, code} -> Mix.raise("git #{Enum.join(args, " ")} exited #{code}: #{String.trim(out)}")
-    end
-  end
 end

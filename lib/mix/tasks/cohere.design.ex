@@ -6,12 +6,20 @@ defmodule Mix.Tasks.Cohere.Design do
 
       $ mix cohere.design                                    # list designs + statuses
       $ mix cohere.design deal-reversals --contexts deals,billing
+      $ mix cohere.design deal-reversals                     # contexts from the branch diff
+      $ mix cohere.design deal-reversals --base develop      # …diffed against a given ref
 
   Scaffolds `cohere/design/deal-reversals.md` (status: draft) and
   assembles its Existing ground: for each anchored context, the current
   API from the map plus the invariants and decisions from its intent
   card — the constraints the design should be shaped against, delivered
   onto the page where the designing happens.
+
+  With `--contexts` omitted, the anchors are inferred from the branch
+  diff, the way `mix cohere.packet --diff` maps changed files to the
+  contexts that own them. Design-first stays the primary path — the flag
+  is explicit intent; inference serves the retrofit, where the change is
+  underway before anyone admits it deserved a design.
 
   Anchoring a context that doesn't exist yet is fine — the design may be
   the thing that introduces it; `mix cohere.complete` verifies it landed.
@@ -21,18 +29,18 @@ defmodule Mix.Tasks.Cohere.Design do
 
   use Mix.Task
 
-  alias Cohere.{Design, Project}
+  alias Cohere.{Design, Map, Packet, Project}
 
   @requirements ["app.config"]
 
   @impl Mix.Task
   def run(args) do
-    {opts, argv} = OptionParser.parse!(args, strict: [contexts: :string])
+    {opts, argv} = OptionParser.parse!(args, strict: [contexts: :string, base: :string])
 
     case argv do
       [] -> list(Project.load())
       [slug] -> start(Project.load(), validate_slug!(slug), opts)
-      _ -> Mix.raise("usage: mix cohere.design [<slug>] [--contexts deals,billing]")
+      _ -> Mix.raise("usage: mix cohere.design [<slug>] [--contexts deals,billing] [--base REF]")
     end
   end
 
@@ -71,6 +79,30 @@ defmodule Mix.Tasks.Cohere.Design do
     end
   end
 
+  # Same file→context resolution as `mix cohere.packet --diff` (DEC-AGE-005):
+  # one matcher in the codebase, `Cohere.Packet.contexts_for_files/3`.
+  defp infer_contexts(project, base) do
+    files =
+      case Project.changed_files(base) do
+        {:ok, files} -> files
+        {:error, message} -> Mix.raise(message <> " — or name anchors: --contexts <ctx>")
+      end
+
+    map = Map.build(project)
+    report = Packet.contexts_for_files(map, Project.source_index(project), files)
+
+    case report.contexts do
+      [] ->
+        Mix.raise(
+          "no changed file mapped to a known context (#{length(files)} changed) — " <>
+            "name the anchors: mix cohere.design <slug> --contexts <ctx>"
+        )
+
+      contexts ->
+        contexts
+    end
+  end
+
   defp supersedes_note(%{supersedes: nil}), do: ""
   defp supersedes_note(%{supersedes: slug}), do: "  (supersedes #{slug})"
 
@@ -92,9 +124,17 @@ defmodule Mix.Tasks.Cohere.Design do
     end
 
     contexts =
-      (opts[:contexts] || "")
-      |> String.split(",", trim: true)
-      |> Enum.map(&String.trim/1)
+      case opts[:contexts] do
+        nil ->
+          inferred = infer_contexts(project, opts[:base] || "main")
+          Mix.shell().info("contexts inferred from branch diff: #{Enum.join(inferred, ", ")}")
+          inferred
+
+        given ->
+          given
+          |> String.split(",", trim: true)
+          |> Enum.map(&String.trim/1)
+      end
 
     ground = Design.ground(project, contexts)
 

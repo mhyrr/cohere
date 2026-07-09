@@ -5,8 +5,9 @@ defmodule Mix.Tasks.Cohere.Check do
   The check verb of the feature loop: run it anytime, locally or in CI;
   fix what it lists and run it again.
 
-      $ mix cohere.check                  # exit 1 on hard drift (the CI gate)
-      $ mix cohere.check --accept deals   # rebind the deals card after re-review
+      $ mix cohere.check                            # exit 1 on hard drift (the CI gate)
+      $ mix cohere.check --accept deals             # rebind the deals card after re-review
+      $ mix cohere.check --accept deals --by greg   # …recording who judged (default: git user.name)
 
   Hard findings fail the build: a stale map, an intent card whose context
   surface moved since review, a card referencing dead code. Design docs
@@ -26,12 +27,12 @@ defmodule Mix.Tasks.Cohere.Check do
 
   @impl Mix.Task
   def run(args) do
-    {opts, _rest} = OptionParser.parse!(args, strict: [accept: :keep])
+    {opts, _rest} = OptionParser.parse!(args, strict: [accept: :keep, by: :string])
     project = Project.load()
 
     case Keyword.get_values(opts, :accept) do
       [] -> check(project)
-      slugs -> Enum.each(slugs, &accept(project, &1))
+      slugs -> Enum.each(slugs, &accept(project, &1, opts[:by] || git_user()))
     end
   end
 
@@ -44,7 +45,19 @@ defmodule Mix.Tasks.Cohere.Check do
     end
   end
 
-  defp accept(project, slug) do
+  # Attribution default: the configured git identity. Judgment traces say
+  # who judged (DEC-AGE-004); absent any identity, the plain form — never
+  # a failure.
+  defp git_user do
+    case System.cmd("git", ["config", "user.name"], stderr_to_stdout: true) do
+      {out, 0} -> with "" <- String.trim(out), do: nil
+      _ -> nil
+    end
+  rescue
+    ErlangError -> nil
+  end
+
+  defp accept(project, slug, by) do
     path = Path.join(Project.intent_dir(project), slug <> ".md")
 
     unless File.exists?(path) do
@@ -65,7 +78,7 @@ defmodule Mix.Tasks.Cohere.Check do
     if group.surface_hash == card.surface do
       Mix.shell().info("#{path} — already in sync, nothing to accept")
     else
-      updated = Intent.accept_drift(File.read!(path), group, Date.utc_today())
+      updated = Intent.accept_drift(File.read!(path), group, Date.utc_today(), by: by)
       File.write!(path, updated)
       Mix.shell().info("#{path} — rebound to surface #{group.surface_hash}, drift annotated")
     end
