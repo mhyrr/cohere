@@ -41,6 +41,9 @@ defmodule Cohere.Onboarding do
     - Never hand-edit `#{Project.map_path(project)}` (derived — run
       `mix cohere.map`) or the machine-managed frontmatter of cards and
       designs.
+    - `mix cohere.check --accept` is a judgment, not a mechanical fix:
+      before running it, surface the drift delta and your card updates
+      to a human and wait for confirmation.
     - Judgment actions record who: pass `--by <name>` to
       `mix cohere.check --accept` and `mix cohere.complete` (defaults to
       git user.name).
@@ -54,9 +57,11 @@ defmodule Cohere.Onboarding do
 
   - Agents run the mechanical verbs freely: map, packet, check, and the
     design/gen.intent scaffolds.
-  - Agents may `mix cohere.check --accept` drift their own in-flight
-    design promised. Unexpected drift stops the work and gets surfaced
-    to a human.
+  - Accepting drift is human-gated: an agent re-reads the card, updates
+    what the change invalidated, then presents the surface delta and its
+    edits for verification. `mix cohere.check --accept` runs only after
+    a human confirms, with `--by` naming who approved. Unexpected drift
+    stops the work outright.
   - `mix cohere.complete` and card edits ride in PRs — human review is
     the approval gate.
   """

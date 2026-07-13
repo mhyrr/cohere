@@ -18,6 +18,9 @@ map, intent cards, design docs, and a drift gate. The loop:
 - Never hand-edit `cohere/map.md` (derived — run
   `mix cohere.map`) or the machine-managed frontmatter of cards and
   designs.
+- `mix cohere.check --accept` is a judgment, not a mechanical fix:
+  before running it, surface the drift delta and your card updates
+  to a human and wait for confirmation.
 - Judgment actions record who: pass `--by <name>` to
   `mix cohere.check --accept` and `mix cohere.complete` (defaults to
   git user.name).
@@ -28,8 +31,10 @@ map, intent cards, design docs, and a drift gate. The loop:
 
 - Agents run the mechanical verbs freely: map, packet, check, and the
   design/gen.intent scaffolds.
-- Agents may `mix cohere.check --accept` drift their own in-flight
-  design promised. Unexpected drift stops the work and gets surfaced
-  to a human.
+- Accepting drift is human-gated: an agent re-reads the card, updates
+  what the change invalidated, then presents the surface delta and its
+  edits for verification. `mix cohere.check --accept` runs only after
+  a human confirms, with `--by` naming who approved. Unexpected drift
+  stops the work outright.
 - `mix cohere.complete` and card edits ride in PRs — human review is
   the approval gate.

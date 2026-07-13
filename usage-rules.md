@@ -11,8 +11,11 @@
   frontmatter (`context`/`reviewed`/`surface`/`functions`) by hand — it is
   machine-managed.
 - When `mix cohere.check` reports a drifted card: re-read the card against
-  the current map, update any invalidated content, then run
-  `mix cohere.check --accept <card>`. Do not accept without re-reading.
+  the current map and update any invalidated content. `--accept` is
+  human-gated: surface the drift delta and your card edits to a human for
+  verification first, then run `mix cohere.check --accept <card>` with
+  `--by <approver>`. Do not accept without re-reading, and never
+  unilaterally.
 - Non-trivial change? Start with `mix cohere.design <slug> --contexts <ctx>`
   and design in the doc, against its Existing ground section. Record
   decisions with their rejected alternatives; list the code you commit to
