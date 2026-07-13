@@ -42,8 +42,10 @@ defmodule Cohere.Onboarding do
       `mix cohere.map`) or the machine-managed frontmatter of cards and
       designs.
     - `mix cohere.check --accept` is a judgment, not a mechanical fix:
-      before running it, surface the drift delta and your card updates
-      to a human and wait for confirmation.
+      before running it, explain the change to a human — the design or
+      decision behind the drift, and what your card edits now claim —
+      so they recognize what they are approving, then wait for
+      confirmation. A raw delta is not an explanation.
     - Judgment actions record who: pass `--by <name>` to
       `mix cohere.check --accept` and `mix cohere.complete` (defaults to
       git user.name).
@@ -58,10 +60,12 @@ defmodule Cohere.Onboarding do
   - Agents run the mechanical verbs freely: map, packet, check, and the
     design/gen.intent scaffolds.
   - Accepting drift is human-gated: an agent re-reads the card, updates
-    what the change invalidated, then presents the surface delta and its
-    edits for verification. `mix cohere.check --accept` runs only after
-    a human confirms, with `--by` naming who approved. Unexpected drift
-    stops the work outright.
+    what the change invalidated, then explains the change — which design
+    or decision drove the drift, the surface delta, and what the card
+    now claims — so the human recognizes what they are approving.
+    `mix cohere.check --accept` runs only after that confirmation, with
+    `--by` naming who approved. Unexpected drift stops the work
+    outright.
   - `mix cohere.complete` and card edits ride in PRs — human review is
     the approval gate.
   """

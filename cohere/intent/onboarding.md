@@ -46,13 +46,17 @@ one — the same delivery logic as the packet's DEC-PAC-004.
   a dev's authored file is the one unrecoverable failure here.
 - DEC-ONB-004 (2026-07-13): the shipped default is ask-first —
   `--accept` is human-gated in both the machine block and the seeded
-  agreement: an agent surfaces the drift delta and its card edits, then
-  accepts only on confirmation, `--by` naming the approver. Teams that
-  trust self-acceptance loosen the seeded agreement; the default errs
-  toward the human seeing every judgment before it lands. Rejected:
+  agreement, and the gate is an explanation: the agent tells the human
+  which design or decision drove the drift, shows the delta, and says
+  what the card now claims, so the confirmation is informed — then
+  accepts with `--by` naming the approver. Teams that trust
+  self-acceptance loosen the seeded agreement; the default errs toward
+  the human recognizing every judgment before it lands. Rejected:
   self-accept for design-promised drift as the default (the original
   agent-surfaces seed) — an agent judging that its own design promised
-  the drift is the rubber stamp the attribution trace exists to expose.
+  the drift is the rubber stamp the attribution trace exists to expose;
+  delta-only surfacing — a raw `+fun/1` line invites a reflexive yes,
+  which is the same rubber stamp with a human in the loop.
 
 ## Non-goals
 

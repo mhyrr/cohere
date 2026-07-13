@@ -12,8 +12,10 @@
   machine-managed.
 - When `mix cohere.check` reports a drifted card: re-read the card against
   the current map and update any invalidated content. `--accept` is
-  human-gated: surface the drift delta and your card edits to a human for
-  verification first, then run `mix cohere.check --accept <card>` with
+  human-gated, and the gate is an explanation, not a paste: tell the human
+  which design or decision drove the drift, show the exact `+fun/1 −fun/2`
+  delta, and say what your card edits now claim, so their confirmation is
+  informed — then run `mix cohere.check --accept <card>` with
   `--by <approver>`. Do not accept without re-reading, and never
   unilaterally.
 - Non-trivial change? Start with `mix cohere.design <slug> --contexts <ctx>`
