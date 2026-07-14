@@ -215,9 +215,9 @@ The full research and design rationale — what Palantir's Ontology and
 8090's Software Factory are actually selling, why the failure modes of
 spec-driven development all point the same direction, and why Elixir is
 the cheapest stack to build this on — lives in
-[cohere/design/design-spec.md](cohere/design/design-spec.md), an accepted
-design doc in cohere's own coherence layer. The feature loop's own design
-is [cohere/design/feature-loop.md](cohere/design/feature-loop.md) —
+[cohere/design/design-spec.md](https://github.com/mhyrr/cohere/blob/main/cohere/design/design-spec.md),
+an accepted design doc in cohere's own coherence layer. The feature loop's own design
+is [cohere/design/feature-loop.md](https://github.com/mhyrr/cohere/blob/main/cohere/design/feature-loop.md) —
 completed by the tool it specifies.
 
 ## License

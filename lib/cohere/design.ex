@@ -19,7 +19,10 @@ defmodule Cohere.Design do
   alias Cohere.{Intent, Map, Markdown, Project, Surface}
 
   defmodule Doc do
-    @moduledoc false
+    @moduledoc """
+    A parsed design doc: frontmatter (slug, status, date, contexts,
+    supersedes) plus the body and its sections keyed by heading.
+    """
     defstruct path: nil,
               slug: nil,
               status: :draft,

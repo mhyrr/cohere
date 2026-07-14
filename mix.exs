@@ -50,14 +50,15 @@ defmodule Cohere.MixProject do
   defp package do
     [
       licenses: ["MIT"],
-      links: %{"GitHub" => @source_url}
+      links: %{"GitHub" => @source_url},
+      files: ~w(lib mix.exs README.md LICENSE CHANGELOG.md usage-rules.md)
     ]
   end
 
   defp docs do
     [
       main: "Cohere",
-      extras: ["README.md"]
+      extras: ["README.md", "CHANGELOG.md", "usage-rules.md"]
     ]
   end
 end

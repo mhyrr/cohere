@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.1.0 (unreleased)
+## v0.1.0 (2026-07-14)
 
 Initial release: the coherence ladder for Elixir/Phoenix.
 
