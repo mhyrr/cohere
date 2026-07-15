@@ -4,7 +4,7 @@ Cohere runs on itself. Everything on this page is lifted from this
 repository's own `cohere/` directory, the same artifacts the CI gate
 checks on every push.
 
-<div class="stamp">derived · cohere/map.md · this repo's committed map · cohere 0.1.0</div>
+<div class="stamp">derived · cohere/map.md · this repo's committed map · cohere 0.1.1</div>
 
 <section class="derived-doc">
 

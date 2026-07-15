@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.1.1 (2026-07-15)
+
+Documentation release, no code changes: README, moduledoc, and docs
+site reworded in a full voice pass.
+
 ## v0.1.0 (2026-07-14)
 
 Initial release: the coherence ladder for Elixir/Phoenix.

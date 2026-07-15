@@ -1,6 +1,6 @@
 # Reference
 
-<div class="stamp">derived · task moduledocs, via reflection · cohere 0.1.0</div>
+<div class="stamp">derived · task moduledocs, via reflection · cohere 0.1.1</div>
 
 Every entry below is read from the compiled task's own `@shortdoc`
 and `@moduledoc`. The reference cannot drift from the tool, because
