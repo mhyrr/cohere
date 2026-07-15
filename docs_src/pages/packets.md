@@ -27,10 +27,10 @@ auto-load them), and pointers to the source files that own it. With
 touched contexts itself: the packet for the work actually in flight.
 
 Designs anchored to the packet's contexts come along too, by status.
-Drafts lead the packet — a draft is someone mid-change on this ground,
-the one thing map and cards cannot tell you — while accepted designs
-appear as one-line pointers, because their durable content already
-lives in the cards.
+Drafts lead the packet: a draft is someone mid-change on this ground,
+the one thing map and cards cannot tell you. Accepted designs appear
+as one-line pointers, because their durable content already lives in
+the cards.
 
 ## Link, don't restate
 

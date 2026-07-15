@@ -2,38 +2,34 @@
 
 **A coherence layer for Elixir/Phoenix projects.**
 
-Docs live at [mhyrr.github.io/cohere](https://mhyrr.github.io/cohere/):
-the ladder, the loop, the document kinds, and the FAQ, with an
-[llms.txt](https://mhyrr.github.io/cohere/llms.txt) for agents.
+Docs live at [mhyrr.github.io/cohere](https://mhyrr.github.io/cohere/).
 
 > A project is coherent to the degree that, at any point in its development,
-> it can furnish any actor — human or model — with the minimal context
+> it can furnish any actor, human or model, with the minimal context
 > sufficient to act in line with the user's intent, and can mechanically
 > detect when the project has drifted from that intent.
 
 Models are intelligent but context-starved, and the failure mode of context
 starvation is incoherence: sessions rediscover the same facts expensively,
 and codebases drift as hundreds of locally-reasonable changes accumulate
-with no shared frame. Cohere makes coherence a **measurable property of the
+with no shared framing. Cohere makes coherence a **measurable property of the
 project** instead of a hoped-for behavior of the agent.
 
-It does this with three document kinds in one directory, each checked as
-hard as its nature allows:
+It does this with three document types in one directory:
 
-- **The map** — the actual shape of your system, *derived* from the
+- **The map.** The actual shape of your system, *derived* from the
   compiled application: contexts and their public API, Ecto schemas with
   real types and associations, Phoenix routes (LiveView unwrapped), Oban
-  workers with queue and cron wiring. Never hand-edited, regenerated on
-  demand — therefore it cannot lie.
-- **Intent cards** — one small authored file per context holding only what
+  workers with queue and cron wiring. This is regenerated on
+  demand.
+- **Intent cards.** One small authored file per context holding what
   cannot be derived: purpose, invariants, decisions with their rejected
-  alternatives, non-goals. Each card is hash-bound to its context's public
-  surface. Living constraints, kept fresh by the check gate.
-- **Design docs** — one authored file per design: problem, existing
+  alternatives, etc. Each card is hash-bound to its context's public
+  surface.
+- **Design docs.** One authored file per design: problem, existing
   ground, shape, promised surface, decisions. Drafts are work in flight;
-  accepted designs are immutable, dated history. The design conversation
-  you'd have anyway, landing in one format the tooling reads — instead of
-  a hairy pile of wiki pages and gists no gate keeps honest.
+  accepted designs are immutable, dated history. These are the design
+  conversations you'd have anyway, in one format agents read too.
 
 No LLM calls. Zero runtime dependencies. Everything is deterministic and
 CI-runnable; models *consume* the outputs but are never required to
@@ -74,65 +70,63 @@ The developer surface is three verbs; everything else is plumbing their
 output points at.
 
 ```console
-$ mix cohere.design deal-reversals --contexts deals   # START
-  ... design in the doc, against its Existing ground ...
-$ mix cohere.check                                    # CHECK — anytime; fix, repeat
+$ mix cohere.design my-design --contexts deals   # START
+  ... design in the doc, against its existing ground ...
+$ mix cohere.check                               # CHECK: anytime; fix, repeat
   ... build ...
-$ mix cohere.check                                    # same command, new findings
-$ mix cohere.complete deal-reversals                  # COMPLETE — when check is quiet
+$ mix cohere.check                               # same command, new findings
+$ mix cohere.complete my-design                  # COMPLETE: when check is quiet
 ```
 
-**Start** scaffolds `cohere/design/deal-reversals.md` (status: draft) and
-assembles its *Existing ground*: each anchored context's current API from
+**Start** scaffolds `cohere/design/my-design.md` (status: draft) and
+assembles its *existing ground*: each anchored context's current API from
 the map, plus the invariants and decisions from its intent card. A no-LLM
-tool can't judge that your design contradicts INV-DEA-002 — it delivers
-INV-DEA-002 onto the page where you're designing, so the contradiction
-gets seen. The tool assembles; the mind judges.
+tool can't judge that your design contradicts INV-DEA-002. It does
+something better suited to a deterministic tool: it delivers INV-DEA-002
+onto the page where you're designing, where the contradiction is hard
+to miss.
 
 **Check** is one iterative command, identical locally and in CI. Hard
 findings exit 1: stale map, drifted cards, dead card references. Design
-findings are advisories, never failures — an accepted design is a dated
+findings are advisory and surfaced to the human: an accepted design is a dated
 record, and drift on history is information, not a bug. A drifted card
 means: re-read it against the new surface, update what your change
-invalidated, then `mix cohere.check --accept deals`. Accepted drift is
+invalidated, then `mix cohere.check --accept context-name`. Accepted drift is
 documented drift; the failure mode this tool exists to kill is the
 *silent* kind.
 
 **Complete** is the land step, one command. It regenerates the map,
 requires the check hard-clean (which forces the card re-review where the
 design's durable decisions get distilled into cards), then verifies every
-backticked ref in the design's *Promised surface* exists in the compiled
+backticked ref in the design's *promised surface* exists in the compiled
 app. A design that promised `reverse_deal/1` cannot complete until
-`reverse_deal/1` exists — the design doc is a mechanically checkable
+`reverse_deal/1` exists; the design doc is a mechanically checkable
 spec, not aspirational prose. On success: `draft → accepted`, dated,
-immutable. New thinking later? A new design with `supersedes:` in its
-frontmatter — history is superseded, never rewritten.
+immutable. New thinking later is a new design naming the old one in
+its `supersedes:` frontmatter; history is superseded, not rewritten.
 
 The PR that lands a feature carries the map delta (the ontology change),
 the card delta (the intent change), the accepted design (the why), and
-the code — reviewable together.
+the code, all reviewable together.
 
 ## What the map looks like
 
-Derived from a real ~185-module Phoenix app, entries read like the
-language of the business, because they are the business — reflected out of
-the compiled code:
+Entries read in the
+language of the business, reflected straight out of the compiled code:
 
 ```markdown
 ### MyApp.Deals — domain `[surface:df8be63a83b8]`
 
-**API** (32): approve_deal/1 create_deal/1 extract_deal_data/1 get_financial_summary/1 …
-**Schemas:** Deal, DealParty, DealPartyFeeComponent
-**Support:** AccountKeys, DealReset, EditTracker, Insights, JournalCalculator
+**API** (32): approve_deal/1 create_deal/1 extract_deal/1 get_summary/1 …
+**Schemas:** Deal, DealParty, DealPartyComponent
+**Support:** AccountKeys, DealReset, EditTracker, Insights, MyCalculator
 
 ### MyApp.Deals.Deal → `deals`
-- fields: …, side:enum(listing|buyer|both|lease|referral),
-  status:enum(draft|needs_review|approved|posting|posted|posting_failed|reversed), …
+- fields: …, status:enum(draft|needs_review|approved|reversed), …
 - belongs_to reviewed_by → MyApp.Users.User via reviewed_by_user_id
-- belongs_to agency → MyApp.Agencies.Agency via agency_id
 ```
 
-Enum vocabularies, custom foreign keys, queue/cron wiring from config —
+Enum vocabularies, custom foreign keys, queue/cron wiring from config:
 the facts agents otherwise rediscover by grepping, delivered in one
 git-tracked file whose PR diff *is* the ontology change.
 
@@ -142,14 +136,14 @@ git-tracked file whose PR diff *is* the ontology change.
 $ mix cohere.check
 ✗ cohere/intent/deals.md
   surface drifted: +approve_deal/1
-  → re-review the card, then `mix cohere.check --accept deals`
-⚠ cohere/design/deal-reversals.md — draft, advisory only
-  anchor "Reversals" not in the map — fine if this design introduces it;
+  → re-review the card, then `mix cohere.check --accept context-name`
+⚠ cohere/design/my-design.md — draft, advisory only
+  anchor "My Design" not in the map — fine if this design introduces it;
   `mix cohere.complete` verifies it lands
 
 drift detected
 
-$ mix cohere.check --accept deals
+$ mix cohere.check --accept context-name
 cohere/intent/deals.md — rebound to surface df8be63a83b8, drift annotated
 ```
 
@@ -167,11 +161,11 @@ cohere/intent/deals.md — rebound to surface df8be63a83b8, drift annotated
 Each level is useful alone; none requires the previous. Phoenix 1.8 ships
 every new project at level 1. Cohere is levels 2–5, adopted incrementally.
 
-Cohere **probes** for what's present rather than requiring anything:
-Ecto present → objects and links appear in the map; Oban present → the job
-surface appears; boundary present → level 4 lights up; Tidewave present →
-work packets direct agents to verify behavior in the running app
-(`project_eval`, `execute_sql_query`) instead of inferring it from source.
+Cohere **probes** for what's present rather than requiring anything.
+With Ecto, objects and links appear in the map; with Oban, the job
+surface; with boundary, level 4 lights up; with Tidewave, work packets
+direct agents to verify behavior in the running app (`project_eval`,
+`execute_sql_query`) instead of inferring it from source.
 
 ## Mix tasks
 
@@ -203,7 +197,7 @@ config :cohere,
 - **Derived or checked, nothing else.** Every artifact gets the strongest
   binding its nature allows: the map is regenerated from code (cannot
   drift), cards are authored-but-hash-bound (drift fails the build), and
-  designs are authored-but-dated — anchored to the map, promise-verified
+  designs are authored-but-dated, anchored to the map, promise-verified
   at completion, advisory ever after. Unbound prose is future lies.
 - **Zero runtime dependencies.** Ecto/Phoenix appear only as test deps for
   fixture reflection. Consumers inherit nothing.
@@ -211,13 +205,14 @@ config :cohere,
 - **Link, don't restate.** Packets carry source records and pointers; they
   never paraphrase code into a second truth.
 
-The full research and design rationale — what Palantir's Ontology and
-8090's Software Factory are actually selling, why the failure modes of
-spec-driven development all point the same direction, and why Elixir is
-the cheapest stack to build this on — lives in
+The full research and design rationale lives in
 [cohere/design/design-spec.md](https://github.com/mhyrr/cohere/blob/main/cohere/design/design-spec.md),
-an accepted design doc in cohere's own coherence layer. The feature loop's own design
-is [cohere/design/feature-loop.md](https://github.com/mhyrr/cohere/blob/main/cohere/design/feature-loop.md) —
+an accepted design doc in cohere's own coherence layer: what Palantir's
+Ontology and 8090's Software Factory are actually selling, why the
+failure modes of spec-driven development all point the same direction,
+and why Elixir is the cheapest stack to build this on. The feature
+loop's design is
+[cohere/design/feature-loop.md](https://github.com/mhyrr/cohere/blob/main/cohere/design/feature-loop.md),
 completed by the tool it specifies.
 
 ## License

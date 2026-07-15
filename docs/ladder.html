@@ -25,8 +25,8 @@
 
 <h1 class="page-title">The ladder</h1>
 
-<p>Coherence isn't binary, and it isn't bought all at once. The ladder
-names what a project actually has, level by level. <code>mix cohere</code> prints
+<p>Coherence isn't binary, and you can't build it all at once. The ladder
+represents what a project can provide. <code>mix cohere</code> prints
 where yours stands.</p>
 <ul class="rungs">
 <li><span class="lvl">L0</span><span class="what">Context by discovery</span><span class="how">raw repo; agents grep and hope</span></li>
@@ -36,11 +36,11 @@ where yours stands.</p>
 <li><span class="lvl">L4</span><span class="what">Governed verbs, verified behavior</span><span class="how">boundary enforcement, Tidewave runtime introspection</span></li>
 <li><span class="lvl">L5</span><span class="what">Delivered context</span><span class="how">work packets: mix cohere.packet</span></li>
 </ul>
-<p>Each level is useful alone; none requires the previous. Phoenix 1.8
+<p>Each level is useful and none requires the previous. Phoenix 1.8
 ships every new project at level 1. Cohere is levels 2–5, adopted
 incrementally: start with the map, add cards to the contexts that
 matter, and let the rest arrive when it earns its place.</p>
-<h2 id="probing-never-requiring">Probing, never requiring</h2>
+<h2 id="dependencies">Dependencies</h2>
 <p>Cohere has zero runtime dependencies, so every capability is <em>probed</em>
 in the host app rather than required of it. The more you have
 installed, the more cohere derives; with nothing beyond Elixir you
@@ -59,9 +59,9 @@ in the running app (<code>project_eval</code>, <code>execute_sql_query</code>) i
 inferring it from source.</li>
 </ul>
 <h2 id="what-a-level-buys-you">What a level buys you</h2>
-<p>The rungs are ordered by the strength of the guarantee, not by effort.
-L1 is prose someone wrote once; nothing checks it. L2 cannot lie but
-knows nothing of intent. L3 is where the gate appears: authored intent
+<p>The rungs are ordered by the strength of the guarantee. L1 is prose
+someone wrote once. L2 can't lie but knows nothing about intent.
+L3 is where the gate appears: authored intent
 that the build <em>verifies</em> is still current. L4 moves enforcement into
 the compiler and verification into the runtime. L5 is the payoff:
 <a href="packets.html">context assembled and delivered</a> for exactly the task

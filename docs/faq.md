@@ -1,24 +1,25 @@
 # FAQ
 
-## The idea
+## Concept
 
 ### Isn't this just documentation with extra steps?
 
-Documentation rots silently, and that rot is the target. The map can't
-rot (it's derived), cards rot loudly (the build fails), designs are
-allowed to age (they're dated history). Every artifact gets the
-strongest binding its nature allows.
+Documentation rots quietly over time, which is what we're trying to
+target. The map can't rot (it's derived), cards rot loudly (the build
+fails), designs are allowed to age (they're dated history). Every
+artifact gets a different binding constraint useful to both humans
+and agents.
 
 ### Why not just watch git diffs?
 
-Git can only see that text changed. The surface hash tracks the
-contract. File churn isn't drift: refactors, private helpers, and
+Git can only see that text changed. The surface hash tracks
+contracts. File churn isn't drift: refactors, private helpers, and
 comments never move the public surface, so the card stays quiet. Drift isn't always file
 churn: macro-generated functions, a new `defdelegate`, or a relocated
 module change the surface without touching the paths a git rule
 watches, and reflection over the compiled module catches them anyway.
 Git also always needs a baseline (changed since *when?*), while a card
-names the surface it was reviewed against, which works in a shallow
+holds the surface it was reviewed against, which works in a shallow
 clone and survives any rebase. And a git rule is satisfied by touching
 the doc in the same PR; `--accept` rewrites the binding and leaves a
 dated trace. The surface hash is a lockfile for intent.
@@ -40,13 +41,13 @@ Models consume the outputs and are never trusted to produce them.
 
 ### How is this different from spec-driven development?
 
-Spec-first tools verify that evidence exists for what you authored: an
-ID appears in a test file, a command exits 0. Cohere derives truth
-from the compiled app and binds authored intent to it. One asks "does
+Spec-first tools verify that evidence exists for what you authored.
+Cohere derives truth from the compiled app and works to bind authored
+intent to it. One asks "does
 the spec have a pointer," the other asks "does the code still match
 the intent."
 
-## The mechanism
+## Mechanisms
 
 ### The hash covers the public surface. What about a behavior change that keeps the signature?
 
@@ -58,8 +59,8 @@ what must stay true.
 ### Won't `--accept` become a rubber stamp?
 
 It can. But the stamp is dated, attributable, and attached to an
-exact `+fun/1 −fun/2` delta. Nothing makes a reviewer think; what
-changes is that skipping the review now leaves a visible record.
+exact `+fun/1 −fun/2` delta. Nothing can force a reviewer to think,
+but the review now leaves an attributable record.
 
 ### Who wins when the card and the code disagree?
 
@@ -69,24 +70,24 @@ tool guessing.
 
 ### Why cards per context instead of per module?
 
-Contexts are where intent lives, and Phoenix already made them the
-boundary vocabulary. Finer-grained is moduledoc territory, and
+Contexts are where intent lives, and they are the boundary
+vocabulary. Finer-grained is moduledoc territory, and
 moduledocs stay exactly where they are. Cards carry what they
 structurally can't: cross-cutting invariants, rejected alternatives,
-non-goals.
+etc.
 
 ### Isn't AGENTS.md enough?
 
-AGENTS.md is level 1 on the [ladder](ladder.html): authored guidance
-nothing checks, stale the week after it's written. Keep it for
-workflow and conventions. The system's shape and constraints belong in
-artifacts that are derived or gated.
+AGENTS.md is level 1 on the [ladder](ladder.html): unverified
+authored guidance, often stale the week after it's written. Keep it
+for workflow and conventions. The system's shape and constraints
+belong in artifacts that are derived or gated.
 
-## The cost
+## Trade-offs
 
 ### I have 200 modules of legacy. Do I card everything?
 
-No. Uncarded contexts are informational, never failures. Derive the
+No. Uncarded contexts are informational, not failures. Derive the
 map with one command, card the two or three contexts where intent
 actually matters, and stop there. Money, auth, and tenancy are the
 usual three.
@@ -105,8 +106,8 @@ you keep readable docs. Production never knew cohere existed.
 ### I'm solo. Overkill?
 
 The teammate with amnesia is already on your project: every agent
-session starts cold. Solo devs have the multiplayer problem, just with
-nobody else to blame it on.
+session starts cold. Solo devs already have the multiplayer problem,
+just nobody else to blame.
 
 ### Umbrella apps? Ash?
 

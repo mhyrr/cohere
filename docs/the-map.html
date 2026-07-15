@@ -31,7 +31,7 @@ routes with LiveView unwrapped, Oban workers with queue and cron
 wiring. It regenerates on demand, which is the whole trick:
 <strong>a document produced by reflection cannot drift from the code it
 reflects.</strong></p>
-<h2 id="derivation-is-functional-not-textual">Derivation is functional, not textual</h2>
+<h2 id="derivation-is-functional">Derivation is functional</h2>
 <p>Classification reads the <em>compiled</em> application, never source text:
 <code>__schema__/1</code> makes a schema, <code>__adapter__/0</code> makes a repo,
 <code>__routes__/0</code> makes a router, the <code>Oban.Worker</code> behaviour makes a
@@ -46,18 +46,18 @@ what the code <em>is</em>, not what its names suggest.</p>
 <pre><code class="lang-markdown">### MyApp.Deals — domain [surface:df8be63a83b8]
 
 **API** (32): approve_deal/1 create_deal/1 extract_deal_data/1 ...
-**Schemas:** Deal, DealParty, DealPartyFeeComponent
+**Schemas:** Deal, DealParty, DealPartyComponent
 
 ### MyApp.Deals.Deal → deals
 - fields: ..., side:enum(listing|buyer|both|lease|referral),
-  status:enum(draft|needs_review|approved|posting|posted|reversed), ...
+  status:enum(draft|needs_review|approved|reversed), ...
 - belongs_to reviewed_by → MyApp.Users.User via reviewed_by_user_id
 </code></pre>
-<p>Entries read like the language of the business because they <em>are</em> the
-business, reflected out of the compiled code. Enum vocabularies, custom
+<p>Entries read in the language of the business, reflected straight out
+of the compiled code. Enum vocabularies, custom
 foreign keys, queue wiring: the facts agents otherwise rediscover by
 grepping, in one git-tracked file whose PR diff is the ontology change.</p>
-<h2 id="the-rules-it-lives-by">The rules it lives by</h2>
+<h2 id="how-it-s-made">How it's made</h2>
 <ul>
 <li><strong>100% derived.</strong> No hand-authored content survives regeneration, by
 design. Anything a human needs to say belongs in an

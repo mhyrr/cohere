@@ -20,7 +20,7 @@ description: Coherence as a measurable property of the project, not a hoped-for 
 Models are intelligent but context-starved, and the failure mode of
 context starvation is incoherence: sessions rediscover the same facts
 expensively, and codebases drift as hundreds of locally-reasonable
-changes accumulate with no shared frame. Cohere makes coherence a
+changes accumulate with no shared framing. Cohere makes coherence a
 **measurable property of the project** instead of a hoped-for behavior
 of the agent.
 
@@ -28,21 +28,19 @@ No LLM calls. Zero runtime dependencies. Everything is deterministic
 and CI-runnable; models *consume* the outputs but are never required
 to produce them.
 
-## Three documents, checked as hard as their nature allows
+## Three document types
 
 - **[The map](the-map.html).** The actual shape of your system,
-  *derived* from the compiled application. Regenerated on demand so it
-  cannot lie.
+  *derived* from the compiled application. Regenerated on demand.
 - **[Intent cards](intent-cards.html).** One small authored file per
   context holding only what cannot be derived: purpose, invariants,
-  decisions with their rejected alternatives. Each card is hash-bound
-  to the code's public surface, so drift fails the build.
+  decisions with their rejected alternatives, etc. Each card is
+  hash-bound to the context's public surface.
 - **[Design docs](design-docs.html).** One authored file per design.
   Drafts are work in flight; accepted designs are immutable, dated
   history whose promises were mechanically verified.
 
 The rule underneath all three: **derived or checked, nothing else.**
-Unbound prose is future lies.
 
 ## Quickstart
 

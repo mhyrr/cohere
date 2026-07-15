@@ -38,27 +38,25 @@
 <p>Models are intelligent but context-starved, and the failure mode of
 context starvation is incoherence: sessions rediscover the same facts
 expensively, and codebases drift as hundreds of locally-reasonable
-changes accumulate with no shared frame. Cohere makes coherence a
+changes accumulate with no shared framing. Cohere makes coherence a
 <strong>measurable property of the project</strong> instead of a hoped-for behavior
 of the agent.</p>
 <p>No LLM calls. Zero runtime dependencies. Everything is deterministic
 and CI-runnable; models <em>consume</em> the outputs but are never required
 to produce them.</p>
-<h2 id="three-documents-checked-as-hard-as-their-nature-allows">Three documents, checked as hard as their nature allows</h2>
+<h2 id="three-document-types">Three document types</h2>
 <ul>
 <li><strong><a href="the-map.html">The map</a>.</strong> The actual shape of your system,
-<em>derived</em> from the compiled application. Regenerated on demand so it
-cannot lie.</li>
+<em>derived</em> from the compiled application. Regenerated on demand.</li>
 <li><strong><a href="intent-cards.html">Intent cards</a>.</strong> One small authored file per
 context holding only what cannot be derived: purpose, invariants,
-decisions with their rejected alternatives. Each card is hash-bound
-to the code's public surface, so drift fails the build.</li>
+decisions with their rejected alternatives, etc. Each card is
+hash-bound to the context's public surface.</li>
 <li><strong><a href="design-docs.html">Design docs</a>.</strong> One authored file per design.
 Drafts are work in flight; accepted designs are immutable, dated
 history whose promises were mechanically verified.</li>
 </ul>
-<p>The rule underneath all three: <strong>derived or checked, nothing else.</strong>
-Unbound prose is future lies.</p>
+<p>The rule underneath all three: <strong>derived or checked, nothing else.</strong></p>
 <h2 id="quickstart">Quickstart</h2>
 <pre><code class="lang-elixir"># mix.exs: dev/test only; consumers inherit nothing
 {:cohere, "~&gt; 0.1", only: [:dev, :test]}

@@ -1,20 +1,19 @@
 # The loop
 
-The developer surface is three verbs. Credo got the shape right: one
-iterative command you run until it comes back quiet, identical locally
-and in CI.
+The developer surface is three verbs. Only one iterative command runs
+during development, identical locally and in CI.
 
 ```console
-$ mix cohere.design deal-reversals --contexts deals   # START
-$ mix cohere.check                                    # CHECK: anytime
-$ mix cohere.complete deal-reversals                  # COMPLETE
+$ mix cohere.design my-design --contexts deals   # START
+$ mix cohere.check                               # CHECK: anytime
+$ mix cohere.complete my-design                  # COMPLETE
 ```
 
 ## Start
 
-`mix cohere.design deal-reversals --contexts deals` scaffolds
-`cohere/design/deal-reversals.md` with `status: draft` and assembles
-its **Existing ground**: each anchored context's current API from the
+`mix cohere.design my-design --contexts deals` scaffolds
+`cohere/design/my-design.md` with `status: draft` and assembles
+its **existing ground**: each anchored context's current API from the
 map, plus the invariants and decisions from its intent card, dated.
 Omit `--contexts` on a branch and the anchors are inferred from the
 diff, the same way `mix cohere.packet --diff` resolves them.
@@ -35,15 +34,15 @@ record, and drift on history is information, not a bug.
 <span class="hazard">✗ cohere/intent/deals.md
   surface drifted: +approve_deal/1</span>
   → re-review the card, then `mix cohere.check --accept deals`
-⚠ cohere/design/deal-reversals.md — draft, advisory only
-  anchor "Reversals" not in the map — fine if this design introduces it
+⚠ cohere/design/my-design.md — draft, advisory only
+  anchor "My Design" not in the map — fine if this design introduces it
 
 <span class="hazard">drift detected</span></code></pre>
 
 A drifted card means: re-read it against the new surface, update what
 your change invalidated, then accept. Accepting always leaves a dated
 trace in the card, attributed to whoever judged (`--by`, defaulting to
-git `user.name`) — in a repo where agents accept their own drift, the
+git `user.name`). In a repo where agents accept their own drift, the
 trace says so. **Accepted drift is documented drift**, and the failure
 mode this loop exists to kill is the silent kind.
 
@@ -54,7 +53,7 @@ cohere/intent/deals.md — rebound to surface df8be63a83b8, drift annotated
 
 ## Complete
 
-`mix cohere.complete deal-reversals` is the land step, one command:
+`mix cohere.complete my-design` is the land step, one command:
 
 1. Regenerate the map. Mechanical, so it just runs.
 2. Require the check hard-clean, which forces the card re-review

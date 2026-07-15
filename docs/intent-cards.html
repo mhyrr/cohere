@@ -25,9 +25,9 @@
 
 <h1 class="page-title">Intent cards</h1>
 
-<p>The map states what the system is. What the system is <em>for</em> can't be
-derived from code, and that's what intent cards carry: purpose,
-invariants, decisions with their rejected alternatives, non-goals.
+<p>The map states what the system is. What the system is <em>for</em> comes
+from intent, not code. So we have intent cards: purpose, invariants,
+decisions with their rejected alternatives, etc.
 One small file per context, in <code>cohere/intent/</code>.</p>
 <pre><code class="lang-markdown">---
 context: MyApp.Deals
@@ -49,11 +49,10 @@ One sentence a new engineer reads first.
 ## Non-goals
 - Commission forecasting. See MyApp.Insights.
 </code></pre>
-<p>Invariants are the constraints an agent must not violate; decisions
-carry the <em>rejected alternatives</em>, the half of institutional memory
-that otherwise dies in chat scrollback. The next actor learns what was
+<p>Invariants are the constraints an agent must not violate. Decisions
+carry the <em>rejected alternatives</em>. The next actor learns what was
 chosen and what was tried.</p>
-<h2 id="the-binding">The binding</h2>
+<h2 id="binding">Binding</h2>
 <p>The frontmatter is machine-managed: cohere stamps the card with the
 context's current surface hash <em>and</em> its full function list. When the
 code's public surface moves, the card is <strong>drifted</strong> and
@@ -68,13 +67,12 @@ git state.</p>
 <p>Accepting is a review action, not a bypass. <code>mix cohere.check --accept
 deals</code> rebinds the card to the new surface and appends a dated line to
 the card's <em>Accepted drift</em> section; silent rebinding is not a
-supported path. <strong>The build fails until a human has looked, and the
-look leaves a dated trace.</strong></p>
-<h2 id="what-cards-are-not">What cards are not</h2>
+supported path. <strong>The build fails until a human has looked, which is
+recorded as a dated trace.</strong></p>
+<h2 id="compared-to-the-map">Compared to the map</h2>
 <p>Cards are not documentation of the API; the map already carries the
-API, and restating it would create a second truth to keep honest.
-A card holds only what reflection cannot reach. If a card ever
-disagrees with the map, the map wins, because the map cannot lie.
+API. A card holds only what reflection cannot reach. If a card ever
+disagrees with the map, the map wins.
 Cards cite <a href="design-docs.html">design docs</a> by slug for the fuller
 story of any decision.</p>
 </main>

@@ -14,8 +14,8 @@ lifecycle the tooling enforces.
 
 A design doc is frontmatter (`design`, `status: draft | accepted |
 superseded`, `date`, `contexts`, optionally `supersedes`) plus
-sections: Problem, Existing ground, Shape, Promised surface,
-Decisions, Open questions, Status log.
+sections: Problem, existing ground, shape, promised surface,
+decisions, open questions, status log.
 
 ### Existing ground
 

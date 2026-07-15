@@ -25,21 +25,22 @@
 
 <h1 class="page-title">FAQ</h1>
 
-<h2 id="the-idea">The idea</h2>
+<h2 id="concept">Concept</h2>
 <h3 id="isn-t-this-just-documentation-with-extra-steps">Isn't this just documentation with extra steps?</h3>
-<p>Documentation rots silently, and that rot is the target. The map can't
-rot (it's derived), cards rot loudly (the build fails), designs are
-allowed to age (they're dated history). Every artifact gets the
-strongest binding its nature allows.</p>
+<p>Documentation rots quietly over time, which is what we're trying to
+target. The map can't rot (it's derived), cards rot loudly (the build
+fails), designs are allowed to age (they're dated history). Every
+artifact gets a different binding constraint useful to both humans
+and agents.</p>
 <h3 id="why-not-just-watch-git-diffs">Why not just watch git diffs?</h3>
-<p>Git can only see that text changed. The surface hash tracks the
-contract. File churn isn't drift: refactors, private helpers, and
+<p>Git can only see that text changed. The surface hash tracks
+contracts. File churn isn't drift: refactors, private helpers, and
 comments never move the public surface, so the card stays quiet. Drift isn't always file
 churn: macro-generated functions, a new <code>defdelegate</code>, or a relocated
 module change the surface without touching the paths a git rule
 watches, and reflection over the compiled module catches them anyway.
 Git also always needs a baseline (changed since <em>when?</em>), while a card
-names the surface it was reviewed against, which works in a shallow
+holds the surface it was reviewed against, which works in a shallow
 clone and survives any rebase. And a git rule is satisfied by touching
 the doc in the same PR; <code>--accept</code> rewrites the binding and leaves a
 dated trace. The surface hash is a lockfile for intent.</p>
@@ -55,12 +56,12 @@ produce the same verdict, with nothing to flake and no API bill to
 pay. A summary that can hallucinate is just more unbound prose.
 Models consume the outputs and are never trusted to produce them.</p>
 <h3 id="how-is-this-different-from-spec-driven-development">How is this different from spec-driven development?</h3>
-<p>Spec-first tools verify that evidence exists for what you authored: an
-ID appears in a test file, a command exits 0. Cohere derives truth
-from the compiled app and binds authored intent to it. One asks "does
+<p>Spec-first tools verify that evidence exists for what you authored.
+Cohere derives truth from the compiled app and works to bind authored
+intent to it. One asks "does
 the spec have a pointer," the other asks "does the code still match
 the intent."</p>
-<h2 id="the-mechanism">The mechanism</h2>
+<h2 id="mechanisms">Mechanisms</h2>
 <h3 id="the-hash-covers-the-public-surface-what-about-a-behavior-change-that-keeps-the-signature">The hash covers the public surface. What about a behavior change that keeps the signature?</h3>
 <p>It doesn't. The hash catches changes to the contract's shape.
 Behavior belongs to the test suite, and at level 4 to runtime
@@ -68,26 +69,26 @@ verification. The card's invariants exist to tell the test writer
 what must stay true.</p>
 <h3 id="won-t-accept-become-a-rubber-stamp">Won't <code>--accept</code> become a rubber stamp?</h3>
 <p>It can. But the stamp is dated, attributable, and attached to an
-exact <code>+fun/1 −fun/2</code> delta. Nothing makes a reviewer think; what
-changes is that skipping the review now leaves a visible record.</p>
+exact <code>+fun/1 −fun/2</code> delta. Nothing can force a reviewer to think,
+but the review now leaves an attributable record.</p>
 <h3 id="who-wins-when-the-card-and-the-code-disagree">Who wins when the card and the code disagree?</h3>
 <p>On facts, the map, because nobody authors it. On intent, the human:
 disagreement halts the build until someone re-reviews, instead of the
 tool guessing.</p>
 <h3 id="why-cards-per-context-instead-of-per-module">Why cards per context instead of per module?</h3>
-<p>Contexts are where intent lives, and Phoenix already made them the
-boundary vocabulary. Finer-grained is moduledoc territory, and
+<p>Contexts are where intent lives, and they are the boundary
+vocabulary. Finer-grained is moduledoc territory, and
 moduledocs stay exactly where they are. Cards carry what they
 structurally can't: cross-cutting invariants, rejected alternatives,
-non-goals.</p>
+etc.</p>
 <h3 id="isn-t-agents-md-enough">Isn't AGENTS.md enough?</h3>
-<p>AGENTS.md is level 1 on the <a href="ladder.html">ladder</a>: authored guidance
-nothing checks, stale the week after it's written. Keep it for
-workflow and conventions. The system's shape and constraints belong in
-artifacts that are derived or gated.</p>
-<h2 id="the-cost">The cost</h2>
+<p>AGENTS.md is level 1 on the <a href="ladder.html">ladder</a>: unverified
+authored guidance, often stale the week after it's written. Keep it
+for workflow and conventions. The system's shape and constraints
+belong in artifacts that are derived or gated.</p>
+<h2 id="trade-offs">Trade-offs</h2>
 <h3 id="i-have-200-modules-of-legacy-do-i-card-everything">I have 200 modules of legacy. Do I card everything?</h3>
-<p>No. Uncarded contexts are informational, never failures. Derive the
+<p>No. Uncarded contexts are informational, not failures. Derive the
 map with one command, card the two or three contexts where intent
 actually matters, and stop there. Money, auth, and tenancy are the
 usual three.</p>
@@ -100,8 +101,8 @@ every artifact is plain markdown in your repo. Remove the package and
 you keep readable docs. Production never knew cohere existed.</p>
 <h3 id="i-m-solo-overkill">I'm solo. Overkill?</h3>
 <p>The teammate with amnesia is already on your project: every agent
-session starts cold. Solo devs have the multiplayer problem, just with
-nobody else to blame it on.</p>
+session starts cold. Solo devs already have the multiplayer problem,
+just nobody else to blame.</p>
 <h3 id="umbrella-apps-ash">Umbrella apps? Ash?</h3>
 <p>Not validated yet. Cohere probes for capabilities rather than
 requiring them, but neither umbrella roots nor Ash resources have been

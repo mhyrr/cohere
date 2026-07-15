@@ -1,8 +1,8 @@
 # Intent cards
 
-The map states what the system is. What the system is *for* can't be
-derived from code, and that's what intent cards carry: purpose,
-invariants, decisions with their rejected alternatives, non-goals.
+The map states what the system is. What the system is *for* comes
+from intent, not code. So we have intent cards: purpose, invariants,
+decisions with their rejected alternatives, etc.
 One small file per context, in `cohere/intent/`.
 
 ```markdown
@@ -27,12 +27,11 @@ One sentence a new engineer reads first.
 - Commission forecasting. See MyApp.Insights.
 ```
 
-Invariants are the constraints an agent must not violate; decisions
-carry the *rejected alternatives*, the half of institutional memory
-that otherwise dies in chat scrollback. The next actor learns what was
+Invariants are the constraints an agent must not violate. Decisions
+carry the *rejected alternatives*. The next actor learns what was
 chosen and what was tried.
 
-## The binding
+## Binding
 
 The frontmatter is machine-managed: cohere stamps the card with the
 context's current surface hash *and* its full function list. When the
@@ -52,14 +51,13 @@ git state.
 Accepting is a review action, not a bypass. `mix cohere.check --accept
 deals` rebinds the card to the new surface and appends a dated line to
 the card's *Accepted drift* section; silent rebinding is not a
-supported path. **The build fails until a human has looked, and the
-look leaves a dated trace.**
+supported path. **The build fails until a human has looked, which is
+recorded as a dated trace.**
 
-## What cards are not
+## Compared to the map
 
 Cards are not documentation of the API; the map already carries the
-API, and restating it would create a second truth to keep honest.
-A card holds only what reflection cannot reach. If a card ever
-disagrees with the map, the map wins, because the map cannot lie.
+API. A card holds only what reflection cannot reach. If a card ever
+disagrees with the map, the map wins.
 Cards cite [design docs](design-docs.html) by slug for the fuller
 story of any decision.

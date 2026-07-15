@@ -7,7 +7,7 @@ wiring. It regenerates on demand, which is the whole trick:
 **a document produced by reflection cannot drift from the code it
 reflects.**
 
-## Derivation is functional, not textual
+## Derivation is functional
 
 Classification reads the *compiled* application, never source text:
 `__schema__/1` makes a schema, `__adapter__/0` makes a repo,
@@ -27,20 +27,20 @@ what the code *is*, not what its names suggest.
 ### MyApp.Deals — domain [surface:df8be63a83b8]
 
 **API** (32): approve_deal/1 create_deal/1 extract_deal_data/1 ...
-**Schemas:** Deal, DealParty, DealPartyFeeComponent
+**Schemas:** Deal, DealParty, DealPartyComponent
 
 ### MyApp.Deals.Deal → deals
 - fields: ..., side:enum(listing|buyer|both|lease|referral),
-  status:enum(draft|needs_review|approved|posting|posted|reversed), ...
+  status:enum(draft|needs_review|approved|reversed), ...
 - belongs_to reviewed_by → MyApp.Users.User via reviewed_by_user_id
 ```
 
-Entries read like the language of the business because they *are* the
-business, reflected out of the compiled code. Enum vocabularies, custom
+Entries read in the language of the business, reflected straight out
+of the compiled code. Enum vocabularies, custom
 foreign keys, queue wiring: the facts agents otherwise rediscover by
 grepping, in one git-tracked file whose PR diff is the ontology change.
 
-## The rules it lives by
+## How it's made
 
 - **100% derived.** No hand-authored content survives regeneration, by
   design. Anything a human needs to say belongs in an
